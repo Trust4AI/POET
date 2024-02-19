@@ -1,0 +1,13 @@
+# IDE/Editor configuration directories
+
+/.idea/
+/.settings/
+/.vscode/
+
+# OS generated files
+
+**/.DS_Store
+
+# Environment configuration
+
+**/.env
