@@ -1,30 +1,8 @@
-## Trust4AI Component Template
+## Trust4AI Bias Generator Component based on static datasets
 
-This project serves as a template for the creation of new components to carry out the evaluation of AI-enabled Search Engines.
+This project provides a generator of prompts/search strings for testing the bias of llm-based search engines using static datasets as sources of information.
 
-### Naming convention for new repositories
-
-It is proposed to use a naming convention for repositories using the template, in order to improve the organisation and facilitate the identification of the different repositories.
-
-The naming convention follows the format `trust4ai-<qa>-<component>-<approach>`, where:
-
-- **\<qa\>** represents the quality attribute associted with the repository. Possible values could be:
-    - bias
-    - safety
-    - privacy
-- **\<component\>** indicates the main action performed by the repository on the quality attribute. Possible values could be:
-    - generator
-    - evaluator
-- **\<technique\>** indicates the technique used to carry out the repository's objective on the quality attribute. Possible values could be:
-    - ds, for dataset
-    - mt, for metamorphic testing
-    - llm, for large language models
-
-For example, if you want to create a repository to serve as an input generator for the safety quality attribute, using a dataset, the name of such a repository would be _trust4ai-safety-generator-ds_.
-
-### Template structure
-
-This repository contains the structure to be used as the basis for development:
+This repository contains the following structure:
 
 - `docs/openapi/spec.yaml`: This file is used to describe the entire API, including available endpoints, operations on each endpoint, operation parameters, and the structure of the response objects. It's written in YAML format following the [OpenAPI Specification](https://spec.openapis.org/oas/latest.html) (OAS).
 - `docs/postman/collection.json`: This file is a collection of API requests saved in JSON format for use with Postman.
