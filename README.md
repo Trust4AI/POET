@@ -14,15 +14,15 @@ The naming convention follows the format `trust4ai-<qa>-<component>-<approach>`,
     - privacy
 - **\<component\>** indicates the main action performed by the repository on the quality attribute. Possible values could be:
     - generator
-    - evluator
-- **\<approach\>** indicates the technique used to carry out the repository's objective on the quality attribute. Possible values could be:
+    - evaluator
+- **\<technique\>** indicates the technique used to carry out the repository's objective on the quality attribute. Possible values could be:
     - ds, for dataset
     - mt, for metamorphic testing
     - llm, for large language models
 
 For example, if you want to create a repository to serve as an input generator for the safety quality attribute, using a dataset, the name of such a repository would be _trust4ai-safety-generator-ds_.
 
-### Repository directories
+### Template structure
 
 This repository contains the structure to be used as the basis for development:
 
