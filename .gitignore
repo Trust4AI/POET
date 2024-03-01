@@ -7,7 +7,12 @@
 # OS generated files
 
 **/.DS_Store
+**/__pycache__/
 
 # Environment configuration
 
 **/.env
+
+# Alembic version files
+src/alembic/versions/*
+
