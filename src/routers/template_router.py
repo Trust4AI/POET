@@ -14,7 +14,7 @@ router = APIRouter()
             description="Get all templates",
             summary="Get all templates",
             responses={200: {"description": "List of templates"}, 500: {"description": "Internal Server Error", "model": schemas.ErrorResponse}})
-async def get_templates():
+async def get_all_templates():
     try:
         result = await template_service.get_all_templates()
         return result
@@ -22,15 +22,16 @@ async def get_templates():
         raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))     
 
 
-@router.get("/{id}", response_model=schemas.TemplateRetrieve, tags=["template"],
+@router.get("/{template_id}", response_model=schemas.TemplateRetrieve, tags=["template"],
             response_description="Get template by id",
             description="Get template by id",
             summary="Get template by id",
             responses={200: {"description": "Template"}, 404: {"description": "Template not found", "model": schemas.ErrorResponse},
                        500: {"description": "Internal Server Error", "model": schemas.ErrorResponse}})
-async def get_template_by_id(id: int):
+async def get_template_by_id(template_id: int):
     try:
-        result = await template_service.get_template_by_id(id)
+
+        result = await template_service.get_template_by_id(template_id)
 
         result = result[0] if result else None
 
@@ -38,6 +39,8 @@ async def get_template_by_id(id: int):
             raise HTTPException(status_code=404, detail="Template not found")
         else:
             return result
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))
     
@@ -57,32 +60,42 @@ async def create_template(model: schemas.TemplateCreate):
         raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))
 
 
-@router.put("/{id}", response_model=models.Template, tags=["template"],
+@router.put("/{template_id}", response_model=schemas.TemplateRetrieve, tags=["template"],
             response_description="Update template by id",
             description="Update template by id",
             summary="Update template by id",
             responses={200: {"description": "Template updated successfully"}, 500: {"description": "Internal Server Error", "model": schemas.ErrorResponse}})
-async def update_template(id: int, model: schemas.TemplateCreate):
+async def update_template(template_id: int, model: schemas.TemplateUpdate):
     try:
-        result = await template_service.update_template(id, model)
+        if not await template_service.exists(template_id):
+            raise HTTPException(status_code=404, detail="Template not found")
+
+        result = await template_service.update_template(template_id, model)
 
         if result:
-            return result
+            return result[0]
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))
 
 
-@router.delete("/{id}", response_model=models.Template, tags=["template"],
+@router.delete("/{template_id}", response_model=models.Template, tags=["template"],
                response_description="Delete template by id",
                description="Delete template by id",
                summary="Delete template by id",
-               responses={204: {"description": "Template deleted successfully"}, 500: {"description": "Internal Server Error", "model": schemas.ErrorResponse}})
-async def delete_template(id: int):
+               responses={204: {"description": "Template deleted successfully"}, 404: {"description": "Template not found", "model": schemas.ErrorResponse}, 
+                          500: {"description": "Internal Server Error", "model": schemas.ErrorResponse}})
+async def delete_template(template_id: int):
     try:
-        result = await template_service.delete_template(id)
+        if not await template_service.exists(template_id):
+            raise HTTPException(status_code=404, detail="Template not found")
+
+        result = await template_service.delete_template(template_id)
 
         if result:
-            raise HTTPException(
-                status_code=204, detail="Template deleted successfully")
+            raise HTTPException(status_code=204, detail="Template deleted successfully")
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))

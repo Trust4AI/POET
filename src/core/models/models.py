@@ -32,6 +32,9 @@ class BaseMarker(SQLModel, table=True):
 
     def __repr__(self):
         return f"BaseMarker(id={self.id}, name={self.name}, description={self.description})"
+    
+    class Config:
+        arbriary_types_allowed = True
 
 
 class CompositeMarker (SQLModel, table=True):
@@ -45,3 +48,6 @@ class CompositeMarker (SQLModel, table=True):
 
     def __repr__(self):
         return f"CompositeMaker(id={self.id}, options={self.options})"
+    
+    class Config:
+        arbriary_types_allowed = True

@@ -43,21 +43,17 @@ async def create_template(model: schemas.TemplateCreate):
         print(e)
 
 
-async def update_template(id: int, model: schemas.TemplateCreate):
-    template = await get_template_by_id(id)
-
-    if not template:
-        return None
-    
-    template.base = model.base
-    template.description = model.description
-
+async def update_template(id: int, model: schemas.TemplateUpdate):
     try:
         async with AsyncSession(engine_async) as session:
-            session.add(template)
+            query = select(models.Template).where(models.Template.id == id)
+            result = await session.exec(query)
+            template = result.one()
+            template.base = model.base
+            template.description = model.description
             await session.commit()
             await session.refresh(template)
-            return template
+            return await get_template_by_id(id)
     except Exception as e:
         print(e)
 
@@ -73,24 +69,26 @@ async def delete_template(id: int):
         print(e)
 
 
+async def exists(id: int):
+    template = await get_template_by_id(id)
+    template = template[0] if template else None
+    return True if template else False
+
+
 async def _transform_results_to_template_retrieve(result):
     templates_dict = {}
 
-    print(result)
-
     if not result:
         return []
-    
-    print(result)
-    
     for template, base_marker, composite_marker in result:
+
         if template.id not in templates_dict:
             templates_dict[template.id] = schemas.TemplateRetrieve(
                 id=template.id,
                 base=template.base,
                 description=template.description,
                 base_markers=[],
-                composite_markes=[]  
+                composite_markers=[]  
             )
 
         if base_marker:
