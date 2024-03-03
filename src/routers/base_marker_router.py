@@ -59,7 +59,7 @@ async def get_base_marker_by_id(base_marker_id: int):
         raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))
 
 
-@router.post("", response_model=schemas.BaseMarkerUpdate, status_code=201, tags=["base_marker"],
+@router.post("", response_model=schemas.BaseMarkerRetrieve, status_code=201, tags=["base_marker"],
              response_description="Create a new base marker",
              description="Create a new base marker",
              summary="Create a new base marker",
