@@ -89,8 +89,8 @@ async def update_composite_marker(composite_marker_id: int, model: schemas.Compo
                description="Delete composite marker by id",
                 summary="Delete composite marker by id",
                 response_description="Composite marker deleted",
-                responses={200: {"description": "Composite marker deleted"}, 404: {"description": "Composite marker not found", "model": schemas.ErrorResponse},
-                        204:{"description": "Template deleted succesfully"} ,500: {"description": "Internal Server Error"}})
+                responses={204: {"description": "Composite marker deleted"}, 404: {"description": "Composite marker not found", "model": schemas.ErrorResponse},
+                          500: {"description": "Internal Server Error"}})
 async def delete_composite_marker(composite_marker_id: int):
     try:
         if not await composite_marker_service.exists(composite_marker_id):
@@ -99,6 +99,8 @@ async def delete_composite_marker(composite_marker_id: int):
         result = await composite_marker_service.delete_composite_marker(composite_marker_id)
         
         if result:
-            raise HTTPException(status_code=204, detail="Template deleted successfully")
+            raise HTTPException(status_code=204, detail="Composite marker deleted")
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

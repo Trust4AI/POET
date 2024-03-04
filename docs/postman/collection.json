@@ -38,7 +38,7 @@
 									"    pm.expect(responseBody.description).to.eql(descriptionTemplate1);\r",
 									"});\r",
 									"\r",
-									"postman.setNextRequest(\"Update template by id\")"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -48,7 +48,7 @@
 							"script": {
 								"exec": [
 									"pm.collectionVariables.clear();\r",
-									"pm.collectionVariables.set(\"baseUrl\", \"localhost:8000\")\r",
+									"pm.collectionVariables.set(\"baseUrl\", \"127.0.0.1:8000\")\r",
 									"pm.collectionVariables.set(\"baseTemplate1\", \"base1\");\r",
 									"pm.collectionVariables.set(\"descriptionTemplate1\", \"description1\")"
 								],
@@ -255,7 +255,7 @@
 									"    pm.expect(responseBody.description).to.eql(descriptionTemplateToUpdate);\r",
 									"});\r",
 									"\r",
-									"postman.setNextRequest(\"Get template by id\")"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -475,7 +475,7 @@
 									"    \r",
 									"})\r",
 									"\r",
-									"postman.setNextRequest(\"Get all templates\")"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -692,7 +692,7 @@
 									"    }\r",
 									"})\r",
 									"\r",
-									"postman.setNextRequest(\"Delete template by id\")"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -795,7 +795,7 @@
 									"    pm.expect(pm.response.code).to.equal(204);\r",
 									"});\r",
 									"\r",
-									"postman.setNextRequest(\"Check delete\")"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -1026,13 +1026,11 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"idTemplate1 = pm.collectionVariables.get(\"idTemplate1\")\r",
-									"\r",
 									"pm.test(\"Status code 404\", function () {\r",
 									"    pm.expect(pm.response.code).to.equal(404);\r",
 									"});\r",
 									"\r",
-									"postman.setNextRequest(\"Create a new template 2\")"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -1250,7 +1248,7 @@
 									"    pm.expect(responseBody.description).to.eql(descriptionTemplate1);\r",
 									"});\r",
 									"\r",
-									"postman.setNextRequest(\"Create a new base marker\")"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -1458,8 +1456,6 @@
 									"pm.test(\"Base Marker create correctly\", function () {\r",
 									"    var responseBody = pm.response.json();\r",
 									"\r",
-									"    console.log(responseBody)\r",
-									"\r",
 									"    pm.expect(pm.response).to.have.header('Content-Type', 'application/json');\r",
 									"    pm.expect(responseBody).to.be.an('object');\r",
 									"    pm.expect(responseBody).to.have.property('name');\r",
@@ -1473,7 +1469,7 @@
 									"    pm.expect(responseBody.description).to.eql(descriptionBaseMarker1);\r",
 									"});\r",
 									"\r",
-									"postman.setNextRequest(\"Update a base marker\")"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -1680,6 +1676,55 @@
 				},
 				{
 					"name": "Update a base marker",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"nameBaseMarkerToUpdate\", \"name to update\")\r",
+									"pm.collectionVariables.set(\"descriptionBaseMarkerToUpdate\", \"description to update\")\r",
+									"var idBaseMarker1 = pm.collectionVariables.get(\"idBaseMarker1\")"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var nameBaseMarkerToUpdate = pm.collectionVariables.get(\"nameBaseMarkerToUpdate\");\r",
+									"var descriptionBaseMarkerToUpdate = pm.collectionVariables.get(\"descriptionBaseMarkerToUpdate\");\r",
+									"var idBaseMarker1 = pm.collectionVariables.get(\"idBaseMarker1\");\r",
+									"\r",
+									"pm.test(\"Status code 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Base Marker create correctly\", function () {\r",
+									"    var responseBody = pm.response.json();\r",
+									"\r",
+									"    console.log(responseBody)\r",
+									"\r",
+									"    pm.expect(pm.response).to.have.header('Content-Type', 'application/json');\r",
+									"    pm.expect(responseBody).to.be.an('object');\r",
+									"    pm.expect(responseBody).to.have.property('name');\r",
+									"    pm.expect(responseBody).to.have.property('description');\r",
+									"    pm.expect(responseBody).to.have.property('id');\r",
+									"    pm.expect(responseBody).to.have.property('options');\r",
+									"\r",
+									"\r",
+									"    pm.expect(responseBody.name).to.eql(nameBaseMarkerToUpdate);\r",
+									"    pm.expect(responseBody.description).to.eql(descriptionBaseMarkerToUpdate);\r",
+									"    pm.expect(responseBody.id).to.eq(idBaseMarker1);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -1694,7 +1739,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"options\": [\n    \"<string>\"\n  ],\n  \"template_id\": \"<integer>\"\n}",
+							"raw": "{\n  \"name\": \"{{nameBaseMarkerToUpdate}}\",\n  \"description\": \"{{descriptionBaseMarkerToUpdate}}\",\n  \"options\": {{optionsBaseMarker1}},\n  \"template_id\": \"{{idTemplate1}}\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1702,20 +1747,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/base_markers/:base_marker_id",
+							"raw": "{{baseUrl}}/base_markers/{{idBaseMarker1}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"base_markers",
-								":base_marker_id"
-							],
-							"variable": [
-								{
-									"key": "base_marker_id",
-									"value": "<integer>",
-									"description": "(Required) "
-								}
+								"{{idBaseMarker1}}"
 							]
 						},
 						"description": "Update a base marker"
@@ -1921,6 +1959,44 @@
 				},
 				{
 					"name": "Get base marker by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var nameBaseMarkerToUpdate = pm.collectionVariables.get(\"nameBaseMarkerToUpdate\");\r",
+									"var descriptionBaseMarkerToUpdate = pm.collectionVariables.get(\"descriptionBaseMarkerToUpdate\");\r",
+									"var idBaseMarker1 = pm.collectionVariables.get(\"idBaseMarker1\");\r",
+									"var idTemplate1 = pm.collectionVariables.get(\"idTemplate1\")\r",
+									"\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status code 200\", function () {\r",
+									"     pm.expect(pm.response.code).to.equal(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Base marker retrieve\", function () {\r",
+									"    var responseBody = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseBody).to.be.an('object');\r",
+									"    pm.expect(responseBody).to.have.property('id');\r",
+									"    pm.expect(responseBody).to.have.property('name');\r",
+									"    pm.expect(responseBody).to.have.property('description');\r",
+									"    pm.expect(responseBody.options).to.be.an('array');\r",
+									"    pm.expect(responseBody).to.have.property('template_id');\r",
+									"\r",
+									"    pm.expect(responseBody.id).to.be.eql(idBaseMarker1);\r",
+									"    pm.expect(responseBody.template_id).to.be.eql(idTemplate1);\r",
+									"    pm.expect(responseBody.name).to.be.eql(nameBaseMarkerToUpdate);\r",
+									"    pm.expect(responseBody.description).to.be.eql(descriptionBaseMarkerToUpdate);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -1930,20 +2006,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/base_markers/:base_marker_id",
+							"raw": "{{baseUrl}}/base_markers/{{idBaseMarker1}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"base_markers",
-								":base_marker_id"
-							],
-							"variable": [
-								{
-									"key": "base_marker_id",
-									"value": "<integer>",
-									"description": "(Required) "
-								}
+								"{{idBaseMarker1}}"
 							]
 						},
 						"description": "Get base marker by id"
@@ -2113,6 +2182,37 @@
 				},
 				{
 					"name": "Get base markers by template id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var idTemplate1 = pm.collectionVariables.get(\"idTemplate1\");\r",
+									"\r",
+									"pm.test(\"Status code 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Base Markers retrieve\", function () {\r",
+									"    pm.expect(pm.response.json()).to.be.an('array');\r",
+									"    pm.expect(pm.response.json()).to.not.be.empty;\r",
+									"    pm.response.json().forEach((marker) => {\r",
+									"     pm.expect(marker).to.have.property('id');\r",
+									"     pm.expect(marker).to.have.property('name');\r",
+									"     pm.expect(marker).to.have.property('description');\r",
+									"     pm.expect(marker).to.have.property('options');\r",
+									"     pm.expect(marker.options).to.be.an('array');\r",
+									"     pm.expect(marker).to.have.property('template_id');\r",
+									"     pm.expect(marker.template_id).to.be.eql(idTemplate1)\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -2122,21 +2222,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/base_markers/template/:template_id",
+							"raw": "{{baseUrl}}/base_markers/template/{{idTemplate1}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"base_markers",
 								"template",
-								":template_id"
-							],
-							"variable": [
-								{
-									"key": "template_id",
-									"value": "<integer>",
-									"description": "(Required) "
-								}
+								"{{idTemplate1}}"
 							]
 						},
 						"description": "Get base markers by template id"
@@ -2310,6 +2403,30 @@
 				},
 				{
 					"name": "Get all base markers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code 200\", function () {\r",
+									"     pm.expect(pm.response.code).to.equal(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Base markers retrieve\", function () {\r",
+									"    pm.expect(pm.response.json()).to.be.an('array');\r",
+									"    pm.response.json().forEach((marker) => {\r",
+									"     pm.expect(marker).to.have.property('id');\r",
+									"     pm.expect(marker).to.have.property('name');\r",
+									"     pm.expect(marker).to.have.property('description');\r",
+									"     pm.expect(marker).to.have.property('options').that.is.an('array');\r",
+									"     pm.expect(marker).to.have.property('template_id');\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -2398,6 +2515,21 @@
 				},
 				{
 					"name": "Delete a base marker",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code 204\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(204);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -2407,20 +2539,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/base_markers/:base_marker_id",
+							"raw": "{{baseUrl}}/base_markers/{{idBaseMarker1}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"base_markers",
-								":base_marker_id"
-							],
-							"variable": [
-								{
-									"key": "base_marker_id",
-									"value": "<integer>",
-									"description": "(Required) "
-								}
+								"{{idBaseMarker1}}"
 							]
 						},
 						"description": "Delete a base marker"
@@ -2587,6 +2712,217 @@
 							"body": "{\n  \"detail\": \"<string>\"\n}"
 						}
 					]
+				},
+				{
+					"name": "Check delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test.skip(\"Status code 404\", function () {\r",
+									"    console.log(pm.response)\r",
+									"    pm.expect(pm.response.code).to.equal(404);\r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/base_markers/{{idBaseMarker1}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"base_markers",
+								"{{idBaseMarker1}}"
+							]
+						},
+						"description": "Get base marker by id"
+					},
+					"response": [
+						{
+							"name": "Base marker found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/base_markers/:base_marker_id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"base_markers",
+										":base_marker_id"
+									],
+									"variable": [
+										{
+											"key": "base_marker_id",
+											"value": "<integer>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": \"<integer>\",\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"options\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"template_id\": \"<integer>\"\n}"
+						},
+						{
+							"name": "Base marker not found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/base_markers/:base_marker_id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"base_markers",
+										":base_marker_id"
+									],
+									"variable": [
+										{
+											"key": "base_marker_id",
+											"value": "<integer>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": \"<string>\"\n}"
+						},
+						{
+							"name": "Validation Error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/base_markers/:base_marker_id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"base_markers",
+										":base_marker_id"
+									],
+									"variable": [
+										{
+											"key": "base_marker_id",
+											"value": "<integer>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+						},
+						{
+							"name": "Internal Server Error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/base_markers/:base_marker_id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"base_markers",
+										":base_marker_id"
+									],
+									"variable": [
+										{
+											"key": "base_marker_id",
+											"value": "<integer>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": \"<string>\"\n}"
+						}
+					]
 				}
 			]
 		},
@@ -2595,6 +2931,46 @@
 			"item": [
 				{
 					"name": "Create Composite Marker",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"compositeMarkerOptions1\", '[\"option2\", \"option22\"]')"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var compositeMarkerOptions1 = pm.collectionVariables.get(\"compositeMarkerOptions1\");\r",
+									"var baseMarkerOptions = pm.collectionVariables.get(\"optionsBaseMarker1\");\r",
+									"\r",
+									"pm.test(\"Status code 201\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Composite Marker retrieve\", function () {\r",
+									"    var responseBody = pm.response.json()\r",
+									"\r",
+									"    pm.expect(responseBody).to.be.an('object');\r",
+									"    pm.expect(responseBody.id).to.exist;\r",
+									"    pm.expect(responseBody.options).to.be.an('object');\r",
+									"    pm.expect(responseBody.options.option1).to.be.an('array');\r",
+									"    pm.expect(responseBody.options.option2).to.be.an('array');\r",
+									"    pm.expect(responseBody.template_id).to.exist;\r",
+									"\r",
+									"    pm.collectionVariables.set(\"idCompositeMarker1\", responseBody.id);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [
@@ -2609,7 +2985,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"options\": {\n    \"sunteb0\": [\n      \"<string>\",\n      \"<string>\"\n    ],\n    \"et_e\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  },\n  \"template_id\": 1\n}",
+							"raw": "{\n    \"options\": {\n        \"option1\": {{optionsBaseMarker1}},\n        \"option2\": {{compositeMarkerOptions1}}\n    },\n    \"template_id\": \"{{idTemplate1}}\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2713,6 +3089,35 @@
 				},
 				{
 					"name": "Update composite marker by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var idTemplate1 = pm.variables.get(\"idTemplate1\");\r",
+									"\r",
+									"pm.test(\"Status code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Composite Marker retrieve\", function () {\r",
+									"    var responseBody = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseBody).to.be.an('object');\r",
+									"    pm.expect(responseBody.id).to.exist;\r",
+									"    pm.expect(responseBody.options).to.be.an('object');\r",
+									"    pm.expect(responseBody.options.option1).to.be.an('array');\r",
+									"    pm.expect(responseBody.options.option1.length).to.be.gt(0);\r",
+									"    pm.expect(responseBody.template_id).to.exist;\r",
+									"    pm.expect(responseBody.template_id).to.be.eql(idTemplate1);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -2727,7 +3132,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"options\": {\n    \"dolor_c6\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  },\n  \"template_id\": \"<integer>\"\n}",
+							"raw": "{\n    \"options\": {\n        \"option1\": {{optionsBaseMarker1}}\n    },\n    \"template_id\": \"{{idTemplate1}}\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2735,20 +3140,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/composite_markers/:composite_marker_id",
+							"raw": "{{baseUrl}}/composite_markers/{{idCompositeMarker1}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"composite_markers",
-								":composite_marker_id"
-							],
-							"variable": [
-								{
-									"key": "composite_marker_id",
-									"value": "<integer>",
-									"description": "(Required) "
-								}
+								"{{idCompositeMarker1}}"
 							]
 						},
 						"description": "Update composite marker by id"
@@ -2949,15 +3347,22 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"var idCompositeMarker1 = pm.collectionVariables.get(\"idCompositeMarker1\")\r",
+									"var idTemplate1 = pm.collectionVariables.get(\"idTemplate1\")\r",
+									"\r",
 									"pm.test(\"Status code 200\", function () {\r",
 									"    pm.expect(pm.response.code).to.equal(200);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"Composite marker retrieve\", function{\r",
-									"    var responseBody = pm.response.json();\r",
+									"pm.test(\"Composite Marker retrieve\", function () {\r",
+									"    var responseBody = pm.response.json()\r",
 									"\r",
-									"    \r",
-									"})"
+									"    pm.expect(responseBody).to.be.an('object');\r",
+									"    pm.expect(responseBody.id).to.exist;\r",
+									"    pm.expect(responseBody.options).to.be.an('object');\r",
+									"    pm.expect(responseBody.options.option1).to.be.an('array');\r",
+									"    pm.expect(responseBody.template_id).to.exist;\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -2972,13 +3377,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/composite_markers/1",
+							"raw": "{{baseUrl}}/composite_markers/{{idCompositeMarker1}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"composite_markers",
-								"1"
+								"{{idCompositeMarker1}}"
 							]
 						},
 						"description": "Get composite marker by id"
@@ -3143,6 +3548,32 @@
 				},
 				{
 					"name": "Get all composite markers by template id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var idTemplate1 = pm.collectionVariables.get(\"idTemplate1\");\r",
+									"\r",
+									"pm.test(\"Status code 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Base Markers retrieve\", function () {\r",
+									"    pm.expect(pm.response.json()).to.be.an('array');\r",
+									"    pm.expect(pm.response.json()).to.not.be.empty;\r",
+									"    pm.response.json().forEach((marker) => {\r",
+									"     pm.expect(marker).to.have.property('id');\r",
+									"     pm.expect(marker).to.have.property('template_id');\r",
+									"     pm.expect(marker.template_id).to.be.eql(idTemplate1)\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -3152,21 +3583,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/composite_markers/template/:template_id",
+							"raw": "{{baseUrl}}/composite_markers/template/{{idTemplate1}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"composite_markers",
 								"template",
-								":template_id"
-							],
-							"variable": [
-								{
-									"key": "template_id",
-									"value": "<integer>",
-									"description": "(Required) "
-								}
+								"{{idTemplate1}}"
 							]
 						},
 						"description": "Get all composite markers by template id"
@@ -3340,28 +3764,18 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('Status code 200', function () {\r",
+									"pm.test(\"Status code 200\", function () {\r",
 									"    pm.expect(pm.response.code).to.equal(200);\r",
-									"})\r",
-									"\r",
-									"pm.test(\"Composite markers retrieve\", function () {\r",
-									"    var responseBody = pm.response.json();\r",
-									"    var dataArray = responseBody;\r",
-									"\r",
-									"    pm.expect(pm.response).to.have.header('Content-Type', 'application/json');\r",
-									"    pm.expect(responseBody).to.be.an('array');\r",
-									"\r",
-									"    if(dataArray.length == 0){\r",
-									"        pm.expect(dataArray).to.be.empty;\r",
-									"    } else {\r",
-									"        pm.expect(dataArray.length).to.above(0);\r",
-									"\r",
-									"        var allProperties = dataArray.every(da => da.hasOwnProperty(\"id\"))\r",
-									"        pm.expect(allProperties).to.be.true\r",
-									"    }\r",
-									"\r",
 									"});\r",
 									"\r",
+									"pm.test(\"Base Markers retrieve\", function () {\r",
+									"    pm.expect(pm.response.json()).to.be.an('array');\r",
+									"    pm.expect(pm.response.json()).to.not.be.empty;\r",
+									"    pm.response.json().forEach((marker) => {\r",
+									"     pm.expect(marker).to.have.property('id');\r",
+									"     pm.expect(marker).to.have.property('template_id');\r",
+									"    });\r",
+									"});\r",
 									""
 								],
 								"type": "text/javascript"
@@ -3451,6 +3865,19 @@
 				},
 				{
 					"name": "Delete composite marker by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code 204\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -3460,20 +3887,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/composite_markers/:composite_marker_id",
+							"raw": "{{baseUrl}}/composite_markers/{{idCompositeMarker1}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"composite_markers",
-								":composite_marker_id"
-							],
-							"variable": [
-								{
-									"key": "composite_marker_id",
-									"value": "<integer>",
-									"description": "(Required) "
-								}
+								"{{idCompositeMarker1}}"
 							]
 						},
 						"description": "Delete composite marker by id"
@@ -3638,6 +4058,201 @@
 							"name": "Internal Server Error",
 							"originalRequest": {
 								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/composite_markers/:composite_marker_id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"composite_markers",
+										":composite_marker_id"
+									],
+									"variable": [
+										{
+											"key": "composite_marker_id",
+											"value": "<integer>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "Check delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test.skip(\"Status code 404\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(404);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/composite_markers/{{idCompositeMarker1}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"composite_markers",
+								"{{idCompositeMarker1}}"
+							]
+						},
+						"description": "Get composite marker by id"
+					},
+					"response": [
+						{
+							"name": "Composite marker found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/composite_markers/:composite_marker_id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"composite_markers",
+										":composite_marker_id"
+									],
+									"variable": [
+										{
+											"key": "composite_marker_id",
+											"value": "<integer>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": \"<integer>\",\n  \"options\": {\n    \"amet_5\": [\n      \"<string>\",\n      \"<string>\"\n    ],\n    \"nisi4d\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  },\n  \"template_id\": \"<integer>\"\n}"
+						},
+						{
+							"name": "Composite marker not found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/composite_markers/:composite_marker_id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"composite_markers",
+										":composite_marker_id"
+									],
+									"variable": [
+										{
+											"key": "composite_marker_id",
+											"value": "<integer>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": \"<string>\"\n}"
+						},
+						{
+							"name": "Validation Error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/composite_markers/:composite_marker_id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"composite_markers",
+										":composite_marker_id"
+									],
+									"variable": [
+										{
+											"key": "composite_marker_id",
+											"value": "<integer>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+						},
+						{
+							"name": "Internal Server Error",
+							"originalRequest": {
+								"method": "GET",
 								"header": [],
 								"url": {
 									"raw": "{{baseUrl}}/composite_markers/:composite_marker_id",
@@ -3916,6 +4531,22 @@
 		},
 		{
 			"key": "idBaseMarker1",
+			"value": ""
+		},
+		{
+			"key": "nameBaseMarkerToUpdate",
+			"value": ""
+		},
+		{
+			"key": "descriptionBaseMarkerToUpdate",
+			"value": ""
+		},
+		{
+			"key": "compositeMarkerOptions1",
+			"value": ""
+		},
+		{
+			"key": "idCompositeMarker1",
 			"value": ""
 		}
 	]

@@ -55,6 +55,8 @@ async def get_base_marker_by_id(base_marker_id: int):
         if not result:
             raise HTTPException(status_code=404, detail="Base marker not found")
         return result
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))
 
@@ -105,16 +107,16 @@ async def update_base_marker(base_marker_id: int, model: schemas.BaseMarkerUpdat
                 response_description="Delete a base marker",
                 description="Delete a base marker",
                 summary="Delete a base marker",
-                responses={200: {"description": "Base marker deleted successfully"}, 500: {"description": "Internal Server Error", "model": schemas.ErrorResponse},
+                responses={204: {"description": "Base marker deleted successfully"}, 500: {"description": "Internal Server Error", "model": schemas.ErrorResponse},
                               404: {"description": "Base marker not found", "model": schemas.ErrorResponse}})
 async def delete_base_marker(base_marker_id: int):
     try:
-        if not base_marker_service.exists(base_marker_id):
+        if not await base_marker_service.exists(base_marker_id):
             raise HTTPException(status_code=404, detail="Base marker not found")
 
         result = await base_marker_service.delete_base_marker(base_marker_id)
         if result:
-            raise HTTPException(status_code=200, detail="Base marker deleted successfully")
+            raise HTTPException(status_code=204, detail="Base marker deleted successfully")
     except HTTPException as e:
         raise e
     except Exception as e:
