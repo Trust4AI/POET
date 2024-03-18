@@ -16,7 +16,7 @@ async def get_all_templates():
             return await _transform_results_to_template_retrieve(result.unique().all())
         
     except Exception as e:
-        print(e)
+        RuntimeError(e)
 
 
 async def get_template_by_id(id: int):
@@ -27,7 +27,7 @@ async def get_template_by_id(id: int):
             return await _transform_results_to_template_retrieve(result.unique().all())
 
     except Exception as e:
-        print(e)
+        RuntimeError(e)
 
 
 async def create_template(model: Union[schemas.TemplateCreateMarker, schemas.TemplateBase]):
@@ -41,6 +41,7 @@ async def create_template_without_markers(model: schemas.TemplateBase):
     template: models.Template = models.Template(
         base=model.base,
         description=model.description,
+        expected_result=model.expected_result if hasattr(model, 'expected_result') else "positive"
     )
     try:
         async with AsyncSession(engine_async) as session:
@@ -49,19 +50,21 @@ async def create_template_without_markers(model: schemas.TemplateBase):
             await session.refresh(template)
             return template
     except Exception as e:
-        raise e
+        RuntimeError(e)
 
 
 async def create_template_with_markers(model: schemas.TemplateCreateMarker):
     template: models.Template = models.Template(
         base=model.base,
         description=model.description,
+        expected_result=model.expected_result if hasattr(model, 'expected_result') else "positive"
     )
     try:
         template_retrieve: schemas.TemplateRetrieve = schemas.TemplateRetrieve(
             id=0,
             base=template.base,
             description=template.description,
+            expected_result=model.expected_result,
             markers=[]
         )
         async with AsyncSession(engine_async) as session:
@@ -69,7 +72,6 @@ async def create_template_with_markers(model: schemas.TemplateCreateMarker):
             await session.commit()
             await session.refresh(template)
             template_retrieve.id = template.id
-            print(template_retrieve)
             for marker in model.markers:
                 base_marker = models.BaseMarker(
                     name=marker.name,
@@ -77,7 +79,6 @@ async def create_template_with_markers(model: schemas.TemplateCreateMarker):
                     options=marker.options,
                     template_id=template.id
                 )
-                print(base_marker)
                 session.add(base_marker)
                 await session.commit()
                 await session.refresh(base_marker)
@@ -90,7 +91,7 @@ async def create_template_with_markers(model: schemas.TemplateCreateMarker):
                 ))
             return template_retrieve
     except Exception as e:
-        raise e
+        RuntimeError(e)
 
 
 async def update_template(id: int, model: schemas.TemplateBase):
@@ -101,11 +102,12 @@ async def update_template(id: int, model: schemas.TemplateBase):
             template = result.one()
             template.base = model.base
             template.description = model.description
+            template.expected_result = model.expected_result
             await session.commit()
             await session.refresh(template)
             return await get_template_by_id(id)
     except Exception as e:
-        print(e)
+        RuntimeError(e)
 
 
 async def delete_template(id: int):
@@ -116,7 +118,7 @@ async def delete_template(id: int):
             await session.commit()
             return template
     except Exception as e:
-        print(e)
+        RuntimeError(e)
 
 
 async def exists(id: int):
@@ -137,6 +139,7 @@ async def _transform_results_to_template_retrieve(result):
                 id=template.id,
                 base=template.base,
                 description=template.description,
+                expected_result=template.expected_result,
                 markers=[]
             )
 

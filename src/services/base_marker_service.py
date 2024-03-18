@@ -51,7 +51,7 @@ async def create_base_marker(model: schemas.BaseMarkerBase):
             await session.refresh(base_maker)
             return base_maker
     except Exception as e:
-        print(e)
+        RuntimeError(e)
 
 
 async def update_base_marker(id: int, model: schemas.BaseMarkerBase):
@@ -71,7 +71,7 @@ async def update_base_marker(id: int, model: schemas.BaseMarkerBase):
             else:
                 return None
     except Exception as e:
-        print(e)
+        RuntimeError(e)
 
 
 async def delete_base_marker(id: int):
@@ -84,7 +84,7 @@ async def delete_base_marker(id: int):
             await session.commit()
             return base_marker
     except Exception as e:
-        print(e)
+        RuntimeError(e)
 
 
 async def exists(id: int):

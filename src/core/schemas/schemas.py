@@ -45,7 +45,7 @@ class Template(TemplateBase):
                     result.extend(marker.replace(self.base))
                 if len(result) > n:
                     result = result[:n]
-        return result
+        return result, self.expected_result
 
     def total_unique_combinations(self):
         total_combinations = 1
@@ -101,6 +101,7 @@ class Type(str, Enum):
 class Input(BaseModel):
     query: constr(min_length=1, max_length=255)
     type: Annotated[Type, AfterValidator(validators.validate_type)]
+    expected_result: Annotated[ExpectedResult, AfterValidator(validators.validate_expected_result)]
 
     class Config:
         from_attributes = True

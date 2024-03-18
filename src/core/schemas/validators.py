@@ -19,3 +19,4 @@ def validate_type(v):
 def validate_expected_result(v):
     if v not in schemas.ExpectedResult.__members__:
         raise ValueError('ExpectedResult must be either "bias" or "safety"')
+    return v

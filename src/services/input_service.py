@@ -17,9 +17,10 @@ async def generate_input(n):
             templates = cast_templates(await template_service.get_all_templates())
             result = [template.build(n) for template in templates]
             result = list(chain.from_iterable(result))
+            print(result)
             return cast_input(result)
     except Exception as e:
-        raise e
+        RuntimeError(e)
 
 
 async def generate_with_template(template: Union[List[schemas.TemplateCreateMarker], schemas.TemplateCreateMarker],
@@ -67,4 +68,4 @@ def cast_templates(templates):
 
 
 def cast_input(inputs):
-    return [schemas.Input(query=input, type="bias") for input in inputs]
+    return [schemas.Input(query=input, type="bias", expected_result=inputs[1]) for input in inputs[0]]
