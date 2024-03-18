@@ -1,0 +1,787 @@
+---
+openapi: 3.1.0
+info:
+  title: FastAPI
+  version: 0.1.0
+paths:
+  "/templates":
+    get:
+      tags:
+      - template
+      - template
+      summary: Get all templates
+      description: Get all templates
+      operationId: get_all_templates_templates_get
+      responses:
+        '200':
+          description: List of templates
+          content:
+            application/json:
+              schema:
+                items:
+                  "$ref": "#/components/schemas/TemplateRetrieve"
+                type: array
+                title: Response Get All Templates Templates Get
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+    post:
+      tags:
+      - template
+      - template
+      summary: Create a new template
+      description: Create a new template
+      operationId: create_template_templates_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - "$ref": "#/components/schemas/TemplateCreateMarker"
+              - "$ref": "#/components/schemas/TemplateBase"
+              title: Model
+        required: true
+      responses:
+        '201':
+          description: Template created successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/TemplateRetrieve"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+  "/templates/{template_id}":
+    get:
+      tags:
+      - template
+      - template
+      summary: Get template by id
+      description: Get template by id
+      operationId: get_template_by_id_templates__template_id__get
+      parameters:
+      - name: template_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Template Id
+      responses:
+        '200':
+          description: Template
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/TemplateRetrieve"
+        '404':
+          description: Template not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+    put:
+      tags:
+      - template
+      - template
+      summary: Update template by id
+      description: Update template by id
+      operationId: update_template_templates__template_id__put
+      parameters:
+      - name: template_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Template Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/TemplateBase"
+      responses:
+        '200':
+          description: Template updated successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/TemplateRetrieve"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+      - template
+      - template
+      summary: Delete template by id
+      description: Delete template by id
+      operationId: delete_template_templates__template_id__delete
+      parameters:
+      - name: template_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Template Id
+      responses:
+        '200':
+          description: Delete template by id
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Template"
+        '204':
+          description: Template deleted successfully
+        '404':
+          description: Template not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+  "/base_markers":
+    get:
+      tags:
+      - base_marker
+      - base_marker
+      summary: Get all base markers
+      description: Get all base markers
+      operationId: get_all_base_markers_base_markers_get
+      responses:
+        '200':
+          description: List of base markers
+          content:
+            application/json:
+              schema:
+                items:
+                  "$ref": "#/components/schemas/BaseMarkerRetrieve"
+                type: array
+                title: Response Get All Base Markers Base Markers Get
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+    post:
+      tags:
+      - base_marker
+      - base_marker
+      summary: Create a new base marker
+      description: Create a new base marker
+      operationId: create_base_marker_base_markers_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/BaseMarkerBase"
+        required: true
+      responses:
+        '201':
+          description: Base marker created successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BaseMarkerRetrieve"
+        '404':
+          description: Template not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+  "/base_markers/template/{template_id}":
+    get:
+      tags:
+      - base_marker
+      - base_marker
+      summary: Get base markers by template id
+      description: Get base markers by template id
+      operationId: get_base_markers_by_template_id_base_markers_template__template_id__get
+      parameters:
+      - name: template_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Template Id
+      responses:
+        '200':
+          description: List of base markers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/BaseMarkerRetrieve"
+                title: Response Get Base Markers By Template Id Base Markers Template  Template
+                  Id  Get
+        '404':
+          description: Template not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+  "/base_markers/{base_marker_id}":
+    get:
+      tags:
+      - base_marker
+      - base_marker
+      summary: Get base marker by id
+      description: Get base marker by id
+      operationId: get_base_marker_by_id_base_markers__base_marker_id__get
+      parameters:
+      - name: base_marker_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Base Marker Id
+      responses:
+        '200':
+          description: Base marker found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BaseMarkerRetrieve"
+        '404':
+          description: Base marker not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+    put:
+      tags:
+      - base_marker
+      - base_marker
+      summary: Update a base marker
+      description: Update a base marker
+      operationId: update_base_marker_base_markers__base_marker_id__put
+      parameters:
+      - name: base_marker_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Base Marker Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/BaseMarkerBase"
+      responses:
+        '200':
+          description: Base marker updated successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BaseMarker"
+        '404':
+          description: Base marker not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+      - base_marker
+      - base_marker
+      summary: Delete a base marker
+      description: Delete a base marker
+      operationId: delete_base_marker_base_markers__base_marker_id__delete
+      parameters:
+      - name: base_marker_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Base Marker Id
+      responses:
+        '200':
+          description: Delete a base marker
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BaseMarker"
+        '204':
+          description: Base marker deleted successfully
+        '404':
+          description: Base marker not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+  "/input/generate":
+    post:
+      tags:
+      - input
+      - input
+      summary: Generate Input
+      operationId: generate_input_input_generate_post
+      parameters:
+      - name: "n"
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 100
+          title: N
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/Input"
+                title: Response Generate Input Input Generate Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/input/generateWithTemplate":
+    post:
+      tags:
+      - input
+      - input
+      summary: Generate With Template
+      operationId: generate_with_template_input_generateWithTemplate_post
+      parameters:
+      - name: "n"
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 100
+          title: N
+      - name: save
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Save
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - type: array
+                items:
+                  "$ref": "#/components/schemas/TemplateCreateMarker"
+              - "$ref": "#/components/schemas/TemplateCreateMarker"
+              title: Template
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/Input"
+                title: Response Generate With Template Input Generatewithtemplate
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+components:
+  schemas:
+    BaseMarker:
+      properties:
+        id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Id
+        name:
+          type: string
+          title: Name
+        description:
+          type: string
+          title: Description
+        options:
+          items:
+            type: string
+          type: array
+          title: Options
+        template_id:
+          type: integer
+          title: Template Id
+      type: object
+      required:
+      - name
+      - description
+      - options
+      - template_id
+      title: BaseMarker
+    BaseMarkerBase:
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Name
+          description: Name of the marker
+          example: "{name}"
+        description:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Description
+          description: Description of the marker
+          example: Name of the person
+        options:
+          items:
+            type: string
+          type: array
+          title: Options
+          description: List of options
+          example:
+          - John
+          - Jane
+        template_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Template Id
+          description: Template id
+      type: object
+      required:
+      - name
+      - description
+      - options
+      title: BaseMarkerBase
+    BaseMarkerRetrieve:
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Name
+          description: Name of the marker
+          example: "{name}"
+        description:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Description
+          description: Description of the marker
+          example: Name of the person
+        options:
+          items:
+            type: string
+          type: array
+          title: Options
+          description: List of options
+          example:
+          - John
+          - Jane
+        template_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Template Id
+          description: Template id
+        id:
+          type: integer
+          title: Id
+      type: object
+      required:
+      - name
+      - description
+      - options
+      - id
+      title: BaseMarkerRetrieve
+    ErrorResponse:
+      properties:
+        detail:
+          type: string
+          title: Detail
+      type: object
+      required:
+      - detail
+      title: ErrorResponse
+    ExpectedResult:
+      type: string
+      enum:
+      - positive
+      - negative
+      title: ExpectedResult
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            "$ref": "#/components/schemas/ValidationError"
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    Input:
+      properties:
+        query:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Query
+        type:
+          "$ref": "#/components/schemas/Type"
+      type: object
+      required:
+      - query
+      - type
+      title: Input
+    Template:
+      properties:
+        id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Id
+        base:
+          type: string
+          title: Base
+        description:
+          type: string
+          title: Description
+        expected_result:
+          type: string
+          title: Expected Result
+      type: object
+      required:
+      - base
+      - description
+      - expected_result
+      title: Template
+    TemplateBase:
+      properties:
+        base:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Base
+          description: Base string
+          example: Hello, {name}!
+        description:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Description
+          description: Description of the template
+          example: A simple greeting
+        expected_result:
+          allOf:
+          - "$ref": "#/components/schemas/ExpectedResult"
+          description: Expected result
+          default: positive
+      type: object
+      required:
+      - base
+      - description
+      title: TemplateBase
+    TemplateCreateMarker:
+      properties:
+        base:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Base
+          description: Base string
+          example: Hello, {name}!
+        description:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Description
+          description: Description of the template
+          example: A simple greeting
+        expected_result:
+          allOf:
+          - "$ref": "#/components/schemas/ExpectedResult"
+          description: Expected result
+          default: positive
+        markers:
+          items:
+            "$ref": "#/components/schemas/BaseMarkerBase"
+          type: array
+          title: Markers
+      type: object
+      required:
+      - base
+      - description
+      - markers
+      title: TemplateCreateMarker
+    TemplateRetrieve:
+      properties:
+        base:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Base
+          description: Base string
+          example: Hello, {name}!
+        description:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Description
+          description: Description of the template
+          example: A simple greeting
+        expected_result:
+          allOf:
+          - "$ref": "#/components/schemas/ExpectedResult"
+          description: Expected result
+          default: positive
+        id:
+          type: integer
+          title: Id
+        markers:
+          items:
+            "$ref": "#/components/schemas/BaseMarkerRetrieve"
+          type: array
+          title: Markers
+      type: object
+      required:
+      - base
+      - description
+      - id
+      - markers
+      title: TemplateRetrieve
+    Type:
+      type: string
+      enum:
+      - bias
+      - safety
+      title: Type
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

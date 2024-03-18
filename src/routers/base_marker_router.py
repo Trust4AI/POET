@@ -67,7 +67,7 @@ async def get_base_marker_by_id(base_marker_id: int):
              summary="Create a new base marker",
              responses={201: {"description": "Base marker created successfully"}, 500: {"description": "Internal Server Error", "model": schemas.ErrorResponse},
                         404: {"description": "Template not found", "model": schemas.ErrorResponse}})
-async def create_base_marker(model: schemas.BaseMarkerCreate):
+async def create_base_marker(model: schemas.BaseMarkerBase):
     try:
         if not await template_service.exists(model.template_id):
             raise HTTPException(status_code=404, detail="Template not found")
@@ -87,7 +87,7 @@ async def create_base_marker(model: schemas.BaseMarkerCreate):
             summary="Update a base marker",
             responses={200: {"description": "Base marker updated successfully"}, 500: {"description": "Internal Server Error", "model": schemas.ErrorResponse},
                        404: {"description": "Base marker not found", "model": schemas.ErrorResponse}})
-async def update_base_marker(base_marker_id: int, model: schemas.BaseMarkerUpdate):
+async def update_base_marker(base_marker_id: int, model: schemas.BaseMarkerBase):
     try:
         if not await base_marker_service.exists(base_marker_id):
             raise HTTPException(status_code=404, detail="Base marker not found")

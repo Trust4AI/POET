@@ -5,7 +5,7 @@ services:
     image: mariadb
     restart: always
     env_file:
-      - .env
+      - ../.env
     environment:
       MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DATABASE_NAME}
@@ -26,6 +26,8 @@ services:
       - mariadb
     ports:
       - "8000:8000"
+    env_file:
+      - ../.env
     environment:
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_USERNAME=${DATABASE_USERNAME}

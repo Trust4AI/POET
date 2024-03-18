@@ -37,7 +37,7 @@ async def get_base_markers_by_template_id(template_id: int):
         RuntimeError(e)
 
 
-async def create_base_marker(model: schemas.BaseMarkerCreate):
+async def create_base_marker(model: schemas.BaseMarkerBase):
     base_maker: models.BaseMarker = models.BaseMarker(
         name=model.name,
         description=model.description,
@@ -54,7 +54,7 @@ async def create_base_marker(model: schemas.BaseMarkerCreate):
         print(e)
 
 
-async def update_base_marker(id: int, model: schemas.BaseMarkerUpdate):
+async def update_base_marker(id: int, model: schemas.BaseMarkerBase):
     try:
        async with AsyncSession(engine_async) as session:
             query = select(models.BaseMarker).where(models.BaseMarker.id == id)

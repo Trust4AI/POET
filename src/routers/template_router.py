@@ -1,6 +1,6 @@
-from typing import List
+from typing import List, Union
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Body
 
 from core.models import models
 from core.schemas import schemas
@@ -45,13 +45,14 @@ async def get_template_by_id(template_id: int):
         raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))
     
 
-@router.post("", response_model=models.Template, status_code=201, tags=["template"],
+@router.post("", response_model=schemas.TemplateRetrieve, status_code=201, tags=["template"],
              response_description="Create a new template",
              description="Create a new template",
              summary="Create a new template",
              responses={201: {"description": "Template created successfully"}, 500: {"description": "Internal Server Error", "model": schemas.ErrorResponse}})
-async def create_template(model: schemas.TemplateCreate):
+async def create_template(model: Union[schemas.TemplateCreateMarker, schemas.TemplateBase] = Body(...)):
     try:
+        print(model)
         result = await template_service.create_template(model)
 
         if result:
@@ -65,7 +66,7 @@ async def create_template(model: schemas.TemplateCreate):
             description="Update template by id",
             summary="Update template by id",
             responses={200: {"description": "Template updated successfully"}, 500: {"description": "Internal Server Error", "model": schemas.ErrorResponse}})
-async def update_template(template_id: int, model: schemas.TemplateUpdate):
+async def update_template(template_id: int, model: schemas.TemplateBase):
     try:
         if not await template_service.exists(template_id):
             raise HTTPException(status_code=404, detail="Template not found")

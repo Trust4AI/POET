@@ -1,163 +1,96 @@
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, constr, conlist
+from pydantic import BaseModel, constr, Field
 from typing_extensions import Annotated
 from pydantic.functional_validators import AfterValidator
 
 from . import validators
 
 
-class Template(BaseModel):
-    base: constr(min_length=1 ,max_length=255)
-    description: constr(min_length=1 ,max_length=255)
-    base_markers: list['BaseMarkerRetrieve']
-    
+class ExpectedResult(str, Enum):
+    positive = "positive"
+    negative = "negative"
+
+
+class TemplateBase(BaseModel):
+    base: constr(min_length=1, max_length=255) = Field(..., description="Base string", example="Hello, {name}!")
+    description: constr(min_length=1, max_length=255) = Field(..., description="Description of the template",
+                                                              example="A simple greeting")
+    expected_result: Annotated[ExpectedResult, AfterValidator(validators.validate_expected_result)] = Field(
+        "positive", description="Expected result")
+
     class Config:
         from_attributes = True
 
-    
+    def __repr__(self):
+        return f"Template(base={self.base}, description={self.description})"
+
+
+class Template(TemplateBase):
+    markers: list['BaseMarker']
+
     def build(self, n: int):
+        total_combinations = self.total_unique_combinations()
         result = []
-        
-        for _ in range(n):
+
+        if total_combinations < n:
             built_string = self.base
-            for marker in self.base_markers:
+            for marker in self.markers:
                 built_string = marker.replace(built_string)
-            result.append(built_string)
-        
+            result.extend(built_string)
+        else:
+            while len(result) < total_combinations and len(result) < n:
+                for marker in self.markers:
+                    result.extend(marker.replace(self.base))
+                if len(result) > n:
+                    result = result[:n]
         return result
 
+    def total_unique_combinations(self):
+        total_combinations = 1
+        for marker in self.markers:
+            total_combinations *= len(marker.options)
+        return total_combinations
+
+
+class TemplateCreateMarker(TemplateBase):
+    markers: list['BaseMarkerBase']
 
     def __repr__(self):
-        return f"Template(base={self.base}, description={self.description})"
+        return f"Template(base={self.base}, description={self.description}, markers={self.markers})"
 
 
-class TemplateCreate(BaseModel):
-    base: constr(min_length=1 ,max_length=255)
-    description: constr(min_length=1 ,max_length=255)
-
-    class Config:
-        from_attributes = True
-
-    def __repr__(self):
-        return f"Template(base={self.base}, description={self.description})"
-
-
-class TemplateUpdate(BaseModel):
-    base: Optional[constr(min_length=1 ,max_length=255)]
-    description: Optional[constr(min_length=1 ,max_length=255)]
-
-    class Config:
-        from_attributes = True
-
-    def __repr__(self):
-        return f"Template(base={self.base}, description={self.description})"
-
-
-class TemplateRetrieve(BaseModel):
+class TemplateRetrieve(TemplateBase):
     id: int
-    base: constr(min_length=1 ,max_length=255)
-    description: constr(min_length=1 ,max_length=255)
-    base_markers: list['BaseMarkerRetrieve']
-    # composite_markers: list['CompositeMarkerRetrieve']
-
-    class Config:
-        from_attributes = True´
+    markers: list['BaseMarkerRetrieve']
 
     def __repr__(self):
-        return f"Template(id={self.id}, base={self.base}, description={self.description})"
+        return f"Template(id={self.id}, base={self.base}, description={self.description}, markers={self.markers})"
 
 
-class BaseMarker(BaseModel):
-    name: constr(min_length=1 ,max_length=255)
-    description: constr(min_length=1 ,max_length=255)
-    options: list[str]
-    template_id: int
-
-    class Config:
-        from_attributes = True
-
-    def replace(self, base: str) -> str:
-        for option in self.options:
-            base = base.replace(self.name, option)
-        return base
-
-    def __repr__(self):
-        return f"BaseMarker(name={self.name}, description={self.description})"
-
-
-class BaseMarkerCreate(BaseModel):
-    name: constr(min_length=1 ,max_length=255)
-    description: constr(min_length=1 ,max_length=255)
-    options: conlist(str, min_length=1)
-    template_id: int
+class BaseMarkerBase(BaseModel):
+    name: constr(min_length=1, max_length=255) = Field(..., description="Name of the marker", example="{name}")
+    description: constr(min_length=1, max_length=255) = Field(..., description="Description of the marker",
+                                                              example="Name of the person")
+    options: list[str] = Field(..., description="List of options", example=["John", "Jane"])
+    template_id: Optional[int] = Field(None, description="Template id")
 
     class Config:
         from_attributes = True
 
     def __repr__(self):
-        return f"BaseMarker(name={self.name}, description={self.description})"
+        return (f"BaseMarker(name={self.name}, description={self.description}, options={self.options}, "
+                f"template_id={self.template_id})")
 
 
-class BaseMarkerUpdate(BaseModel):
-    name: Optional[constr(min_length=1 ,max_length=255)]
-    description: Optional[constr(min_length=1 ,max_length=255)]
-    options: conlist(str, min_length=1)
-    template_id: Optional[int]
+class BaseMarker(BaseMarkerBase):
+    def replace(self, base: str) -> list[str]:
+        return [base.replace(self.name, option) for option in self.options]
 
-    class Config:
-        from_attributes = True
 
-    def __repr__(self):
-        return f"BaseMarker(name={self.name}, description={self.description})"
-
-class BaseMarkerRetrieve(BaseModel):
+class BaseMarkerRetrieve(BaseMarkerBase):
     id: int
-    name: str
-    description: str
-    options: list[str]
-    template_id: int
-
-    class Config:
-        from_attributes = True
-
-    def __repr__(self):
-        return f"BaseMarker(id={self.id}, name={self.name}, description={self.description})"
-
-
-class CompositeMarkerCreate(BaseModel):
-    options: Annotated[dict[str, list[str]], AfterValidator(validators.validate_options)]
-    template_id: int
-
-    class Config:
-        from_attributes = True
-
-    def __repr__(self):
-        return f"CompositeMarker(options={self.options})"
-
-
-class CompositeMarkerUpdate(BaseModel):
-    options: Annotated[Optional[dict[str, list[str]]], AfterValidator(validators.validate_options)]
-    template_id: Optional[int]
-
-    class Config:
-        from_attributes = True
-
-    def __repr__(self):
-        return f"CompositeMarker(options={self.options})"
-    
-
-class CompositeMarkerRetrieve(BaseModel):
-    id: int
-    options: Annotated[dict[str, list[str]], AfterValidator(validators.validate_options)]
-    template_id: int
-
-    class Config:
-        from_attributes = True
-
-    def __repr__(self):
-        return f"CompositeMarker(id={self.id}, options={self.options})"
 
 
 class Type(str, Enum):
@@ -166,8 +99,7 @@ class Type(str, Enum):
 
 
 class Input(BaseModel):
-    id: int
-    query: constr(min_length=1 ,max_length=255)
+    query: constr(min_length=1, max_length=255)
     type: Annotated[Type, AfterValidator(validators.validate_type)]
 
     class Config:
@@ -176,4 +108,3 @@ class Input(BaseModel):
 
 class ErrorResponse(BaseModel):
     detail: str
-
