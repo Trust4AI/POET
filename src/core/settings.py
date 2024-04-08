@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     database_port: str 
     database_password: str 
     database_name: str 
-    database_username: str 
+    database_username: str
 
     class Config:
         extra = "allow"

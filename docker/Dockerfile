@@ -2,13 +2,9 @@ FROM python:3.11 as builder
 
 WORKDIR /app
 
-RUN pip install poetry
+COPY requirements.txt /app/
 
-COPY pyproject.toml poetry.lock* /app/
-
-RUN poetry config virtualenvs.create false
-
-RUN poetry install --no-root --no-dev
+RUN pip install --no-cache-dir -r requirements.txt
 
 WORKDIR /app
 

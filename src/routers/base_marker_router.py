@@ -8,7 +8,7 @@ from services import base_marker_service, template_service
 router = APIRouter()
 
 
-@router.get("", response_model=List[schemas.BaseMarkerRetrieve], tags=["base_marker"],
+@router.get("", response_model=List[schemas.BaseMarkerRetrieve],
             response_description="Get all base markers",
             description="Get all base markers",
             summary="Get all base markers",
@@ -21,7 +21,7 @@ async def get_all_base_markers():
         raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))
     
 
-@router.get("/template/{template_id}", response_model=list[schemas.BaseMarkerRetrieve], tags=["base_marker"],
+@router.get("/template/{template_id}", response_model=list[schemas.BaseMarkerRetrieve],
             response_description="Get base markers by template id",
             description="Get base markers by template id",
             summary="Get base markers by template id",
@@ -43,7 +43,7 @@ async def get_base_markers_by_template_id(template_id: int):
         raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))
 
 
-@router.get("/{base_marker_id}", response_model=schemas.BaseMarkerRetrieve, tags=["base_marker"],
+@router.get("/{base_marker_id}", response_model=schemas.BaseMarkerRetrieve,
             response_description="Get base marker by id",
             description="Get base marker by id",
             summary="Get base marker by id",
@@ -61,13 +61,13 @@ async def get_base_marker_by_id(base_marker_id: int):
         raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))
 
 
-@router.post("", response_model=schemas.BaseMarkerRetrieve, status_code=201, tags=["base_marker"],
+@router.post("", response_model=schemas.BaseMarkerRetrieve, status_code=201,
              response_description="Create a new base marker",
              description="Create a new base marker",
              summary="Create a new base marker",
              responses={201: {"description": "Base marker created successfully"}, 500: {"description": "Internal Server Error", "model": schemas.ErrorResponse},
                         404: {"description": "Template not found", "model": schemas.ErrorResponse}})
-async def create_base_marker(model: schemas.BaseMarkerBase):
+async def create_base_marker(model: schemas.BaseMarker):
     try:
         if not await template_service.exists(model.template_id):
             raise HTTPException(status_code=404, detail="Template not found")
@@ -81,13 +81,13 @@ async def create_base_marker(model: schemas.BaseMarkerBase):
         raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))
 
 
-@router.put("/{base_marker_id}", response_model=models.BaseMarker, tags=["base_marker"],
+@router.put("/{base_marker_id}", response_model=models.BaseMarker,
             response_description="Update a base marker",
             description="Update a base marker",
             summary="Update a base marker",
             responses={200: {"description": "Base marker updated successfully"}, 500: {"description": "Internal Server Error", "model": schemas.ErrorResponse},
                        404: {"description": "Base marker not found", "model": schemas.ErrorResponse}})
-async def update_base_marker(base_marker_id: int, model: schemas.BaseMarkerBase):
+async def update_base_marker(base_marker_id: int, model: schemas.BaseMarkerUpdate):
     try:
         if not await base_marker_service.exists(base_marker_id):
             raise HTTPException(status_code=404, detail="Base marker not found")
@@ -103,7 +103,7 @@ async def update_base_marker(base_marker_id: int, model: schemas.BaseMarkerBase)
         raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))
     
 
-@router.delete("/{base_marker_id}", response_model=models.BaseMarker, tags=["base_marker"],
+@router.delete("/{base_marker_id}", response_model=models.BaseMarker,
                 response_description="Delete a base marker",
                 description="Delete a base marker",
                 summary="Delete a base marker",

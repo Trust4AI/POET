@@ -16,9 +16,8 @@ async def generate_input(n):
         async with AsyncSession(engine_async) as session:
             templates = cast_templates(await template_service.get_all_templates())
             result = [template.build(n) for template in templates]
-            result = list(chain.from_iterable(result))
-            print(result)
-            return cast_input(result)
+            result = [cast_input(input) for input in result]
+            return [r for rs in result for r in rs]
     except Exception as e:
         RuntimeError(e)
 
@@ -68,4 +67,4 @@ def cast_templates(templates):
 
 
 def cast_input(inputs):
-    return [schemas.Input(query=input, type="bias", expected_result=inputs[1]) for input in inputs[0]]
+    return [schemas.Input(query=input, type=inputs[2], expected_result=inputs[1]) for input in inputs[0]]

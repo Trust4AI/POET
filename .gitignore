@@ -16,3 +16,7 @@
 # Alembic version files
 src/alembic/versions/*
 
+# results
+src/results/*
+
+

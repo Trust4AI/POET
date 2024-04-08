@@ -6,14 +6,16 @@ from routers.base_marker_router import router as base_marker_router
 from routers.input_router import router as input_router
 from routers.template_router import router as template_router
 
-app = FastAPI()
+PREFIX = '/api/v1'
+
+app = FastAPI(openapi_url="/api/v1/openapi.json", docs_url="/api/v1/docs", redoc_url="/api/v1/redoc")
 
 settings = Settings()
 
 
-app.include_router(template_router, prefix='/templates', tags=['template'])
-app.include_router(base_marker_router, prefix='/base_markers', tags=['base_marker'])
-app.include_router(input_router, prefix='/input', tags=['input'])
+app.include_router(template_router, prefix=PREFIX+'/templates', tags=['template'])
+app.include_router(base_marker_router, prefix=PREFIX+'/base_markers', tags=['base_marker'])
+app.include_router(input_router, prefix=PREFIX+'/input', tags=['input'])
 
 
 if __name__ == "__main__":

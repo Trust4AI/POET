@@ -8,4 +8,8 @@ alembic revision --autogenerate -m "Initial migration"
 
 alembic upgrade head
 
+export PYTHONPATH="${PYTHONPATH}:/app"
+
+python default_template/load.py
+
 exec uvicorn main:app --host 0.0.0.0 --port 8000
