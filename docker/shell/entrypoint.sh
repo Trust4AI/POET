@@ -10,6 +10,15 @@ alembic upgrade head
 
 export PYTHONPATH="${PYTHONPATH}:/app"
 
+chmod +x default_template/load.py
+
+exec uvicorn main:app --host 0.0.0.0 --port 8000 &
+
+sleep 10
+
 python default_template/load.py
 
-exec uvicorn main:app --host 0.0.0.0 --port 8000
+wait
+
+
+

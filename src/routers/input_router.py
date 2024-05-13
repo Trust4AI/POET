@@ -9,11 +9,12 @@ from services import input_service
 router = APIRouter()
 
 
-@router.post("/generate", response_model=List[schemas.Input],
+@router.get("/generate", response_model=List[schemas.Input],
              response_description="Generate inputs",
              description="Generate inputs",
              summary="Generate inputs",
-             responses={200: {"description": "List of inputs"}, 500: {"description": "Internal Server Error", "model": schemas.ErrorResponse}})
+             responses={200: {"description": "List of inputs"},
+                        500: {"description": "Internal Server Error", "model": schemas.ErrorResponse}})
 async def generate_input(n: int = 100):
     result = await input_service.generate_input(n)
     if result is None:
@@ -25,8 +26,21 @@ async def generate_input(n: int = 100):
              response_description="Generate inputs with a template",
              description="Generate inputs with a template",
              summary="Generate inputs with a template",
-             responses={200: {"description": "List of inputs"}, 500: {"description": "Internal Server Error", "model": schemas.ErrorResponse}})
-async def generate_with_template(template: Union[List[schemas.TemplateCreateMarker], schemas.TemplateCreateMarker],
-                                 n: int = 100, save: bool = False):
-    result = await input_service.generate_with_template(template, n, save)
+             responses={200: {"description": "List of inputs"},
+                        500: {"description": "Internal Server Error", "model": schemas.ErrorResponse}})
+async def generate_with_template(template: schemas.TemplateCreateMarker, n: int = 100,
+                                 mode: str = Union["random", "sequential"]):
+    result = await input_service.generate_with_template(template, n, mode)
+    return result[:n]
+
+
+@router.get("/generateWithTemplateId", response_model=List[schemas.Input],
+            response_description="Generate inputs with a template",
+            description="Generate inputs with a template",
+            summary="Generate inputs with a template",
+            responses={200: {"description": "List of inputs"},
+                       500: {"description": "Internal Server Error"}})
+async def generate_with_template_id(template_id: int, n: int = 100,
+                                    mode: str = Union["random", "sequential"]):
+    result = await input_service.generate_with_template_id(template_id, n, mode)
     return result[:n]

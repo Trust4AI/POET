@@ -5,11 +5,13 @@ from core.models import models
 from core.models.database import engine_async
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-TEMPLATE_DIR = './'
+TEMPLATE_DIR = './default_template/'
 
 
 def list_templates():
     result = os.listdir(TEMPLATE_DIR)
+    print("Templates: ")
+    print(result)
     return [f for f in result if f.endswith('.json')]
 
 
@@ -37,13 +39,13 @@ async def load_template(template_data):
 
     saved_template = await save_template(template)
 
-    if 'markers' in template_data:
+    if 'placeholders' in template_data:
         markers = []
-        for marker_data in template_data['markers']:
-            marker = models.BaseMarker(
+        for marker_data in template_data['placeholders']:
+            marker = models.Placeholder(
                 name=marker_data['name'],
                 description=marker_data['description'],
-                options=marker_data['options'],
+                values=marker_data['values'],
                 template_id=saved_template.id
             )
             markers.append(marker)
@@ -62,4 +64,9 @@ async def load_templates():
 if __name__ == '__main__':
     import asyncio
 
+    #echo console
+    print("Loading templates...")
+
     asyncio.run(load_templates())
+
+    print("Templates loaded successfully!")

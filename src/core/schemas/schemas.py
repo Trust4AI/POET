@@ -1,3 +1,5 @@
+import itertools
+import random
 from enum import Enum
 from typing import Optional, List
 
@@ -23,94 +25,39 @@ class TemplateBase(BaseModel):
 
 
 class Template(TemplateBase):
-    markers: list['BaseMarker']
+    placeholders: list['Placeholder']
 
-    def build(self, n: int):
-        total_combinations = self.total_unique_combinations()
-        result = []
+    def build(self, n: int, mode: str = "random"):
 
-        built_string = self.base
+        combinations = {placeholder.name: placeholder.values for placeholder in self.placeholders}
 
-        if total_combinations < n:
+        keys = [key for key in combinations.keys() if key in self.base]
 
-            if len(self.markers) == 1:
-                result.extend(self.markers[0].replace(self.base))
-                return result, self.expected_result
-            dict_markers = [{f"{marker.name}": o} for marker in self.markers for o in marker.options]
+        all_combinations = list(itertools.product(*(combinations[key] for key in keys)))
 
-            dm = []
+        def create_sentence(values):
+            sentence = self.base
+            for key, value in zip(keys, values):
+                start_index = sentence.index(key)
+                if start_index == 0 or (sentence[start_index -2:start_index].strip() in {".", "?"}):
+                    value = value.capitalize()
+                else:
+                    value = value.lower()
+                sentence = sentence.replace(key, value)
+            return sentence
 
-            for d in dict_markers:
-                dmd = []
-                k1 = list(d.keys())[0]
-                v1 = list(d.values())[0]
-                dmd.append({k1: v1})
-                for d2 in dict_markers:
-                    k2 = list(d2.keys())[0]
-                    v2 = list(d2.values())[0]
-
-                    if k1 != k2 and v1 != v2:
-                        dmd.append({k2: v2})
-                dm.append(dmd)
-
-            for d in dm:
-                _k = list(d[0].keys())[0]
-                _v = list(d[0].values())[0]
-                _built_string = built_string.replace(_k, _v)
-                for d_ in d[1:]:
-                    k = list(d_.keys())[0]
-                    v = list(d_.values())[0]
-                    __built_string = _built_string.replace(k, v)
-                    result.append(__built_string)
-
-        else:
-            while len(result) < total_combinations and len(result) < n:
-                if len(self.markers) == 1:
-                    result.extend(self.markers[0].replace(self.base))
-                    return result, self.expected_result
-                dict_markers = [{f"{marker.name}": o} for marker in self.markers for o in marker.options]
-
-                dm = []
-
-                for d in dict_markers:
-                    dmd = []
-                    k1 = list(d.keys())[0]
-                    v1 = list(d.values())[0]
-                    dmd.append({k1: v1})
-                    for d2 in dict_markers:
-                        k2 = list(d2.keys())[0]
-                        v2 = list(d2.values())[0]
-
-                        if k1 != k2 and v1 != v2:
-                            dmd.append({k2: v2})
-                    dm.append(dmd)
-
-                for d in dm:
-                    _k = list(d[0].keys())[0]
-                    _v = list(d[0].values())[0]
-                    _built_string = built_string.replace(_k, _v)
-                    for d_ in d[1:]:
-                        k = list(d_.keys())[0]
-                        v = list(d_.values())[0]
-                        __built_string = _built_string.replace(k, v)
-                        result.append(__built_string)
-
-                if len(result) > n:
-                    result = result[:n]
-        return result, self.expected_result, self.description
-
-    def total_unique_combinations(self):
-        total_combinations = 1
-        for marker in self.markers:
-            total_combinations *= len(marker.options)
-        return total_combinations
+        if mode == "exhaustive":
+            return [create_sentence(combo) for combo in all_combinations[:n]], self.expected_result, self.description
+        elif mode == "random":
+            selected_combinations = random.sample(all_combinations, min(n, len(all_combinations)))
+            return [create_sentence(combo) for combo in selected_combinations], self.expected_result, self.description
 
 
 class TemplateCreateMarker(TemplateBase):
-    markers: list['BaseMarkerBase']
+    placeholders: list['PlaceholderBase']
 
     def __repr__(self):
-        return f"Template(base={self.base}, description={self.description}, markers={self.markers})"
+        return f"Template(base={self.base}, description={self.description}, markers={self.placeholders})"
 
 
 class TemplateUpdate(BaseModel):
@@ -130,44 +77,44 @@ class TemplateUpdate(BaseModel):
 
 class TemplateRetrieve(TemplateBase):
     id: int
-    markers: list['BaseMarkerRetrieve']
+    placeholders: list['PlaceholderRetrieve']
 
     def __repr__(self):
-        return f"Template(id={self.id}, base={self.base}, description={self.description}, markers={self.markers})"
+        return f"Template(id={self.id}, base={self.base}, description={self.description}, markers={self.placeholders})"
 
 
-class BaseMarkerBase(BaseModel):
+class PlaceholderBase(BaseModel):
     name: constr(min_length=1, max_length=255) = Field(..., description="Name of the marker", example="{name}")
     description: constr(min_length=1, max_length=255) = Field(..., description="Description of the marker",
                                                               example="Name of the person")
-    options: List[str] = Field(..., description="List of options", example=["John", "Jane"])
+    values: List[str] = Field(..., description="List of options", example=["John", "Jane"])
 
     class Config:
         from_attributes = True
 
     def __repr__(self):
-        return (f"BaseMarker(name={self.name}, description={self.description}, options={self.options}, "
+        return (f"BaseMarker(name={self.name}, description={self.description}, options={self.values}, "
                 f"template_id={self.template_id if 'template_id' in self.__dict__ else None})")
 
 
-class BaseMarker(BaseMarkerBase):
+class Placeholder(PlaceholderBase):
     template_id: Optional[int] = Field(None, description="Template id")
 
     def replace(self, base: str) -> list[str]:
-        return [base.replace(self.name, option) for option in self.options]
+        return [base.replace(self.name, option) for option in self.values]
 
 
-class BaseMarkerRetrieve(BaseMarkerBase):
+class PlaceholderRetrieve(PlaceholderBase):
     id: int
     template_id: int = Field(None, description="Template id")
 
 
-class BaseMarkerUpdate(BaseModel):
+class PlaceholderUpdate(BaseModel):
     name: Optional[constr(min_length=1, max_length=255)] = Field(None, description="Name of the marker",
                                                                  example="{name}")
     description: Optional[constr(min_length=1, max_length=255)] = Field(None, description="Description of the marker",
                                                                         example="Name of the person")
-    options: Optional[List[str]] = Field(None, description="List of options", example=["John", "Jane"])
+    values: Optional[List[str]] = Field(None, description="List of options", example=["John", "Jane"])
 
     template_id: Optional[int] = Field(None, description="Template id")
 
@@ -175,7 +122,7 @@ class BaseMarkerUpdate(BaseModel):
         from_attributes = True
 
     def __repr__(self):
-        return (f"BaseMarker(name={self.name}, description={self.description}, options={self.options}, "
+        return (f"BaseMarker(name={self.name}, description={self.description}, options={self.values}, "
                 f"template_id={self.template_id if 'template_id' in self.__dict__ else None})")
 
 

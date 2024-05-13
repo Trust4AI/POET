@@ -8,13 +8,13 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from core.models import models
 from core.models.database import engine_async
 from core.schemas import schemas
-from services import base_marker_service
+from services import placeholder_service
 
 
 async def get_all_templates():
     try:
         async with AsyncSession(engine_async) as session:
-            query = select(models.Template, models.BaseMarker).join(models.BaseMarker, isouter=True)
+            query = select(models.Template, models.Placeholder).join(models.Placeholder, isouter=True)
             result = await session.exec(query)
             return await _transform_results_to_template_retrieve(result.unique().all())
     except IntegrityError as e:
@@ -30,7 +30,7 @@ async def get_all_templates():
 async def get_template_by_id(template_id: int):
     try:
         async with AsyncSession(engine_async) as session:
-            query = select(models.Template, models.BaseMarker).join(models.BaseMarker, isouter=True).where(
+            query = select(models.Template, models.Placeholder).join(models.Placeholder, isouter=True).where(
                 models.Template.id == template_id)
             result = await session.exec(query)
             return await _transform_results_to_template_retrieve(result.all())
@@ -42,7 +42,7 @@ async def get_template_by_id(template_id: int):
 
 
 async def create_template(model: Union[schemas.TemplateCreateMarker, schemas.TemplateBase]):
-    if 'markers' not in model.dict() or not model.markers:
+    if 'markers' not in model.dict() or not model.placeholders:
         return await create_template_without_markers(model)
     else:
         return await create_template_with_markers(model)
@@ -75,7 +75,7 @@ async def create_template_with_markers(model: schemas.TemplateCreateMarker):
         if exists_template:
             exists_markers = []
             for et in exists_template:
-                exists_marker = await base_marker_service.check_template_markers_exists(model.markers, et.id)
+                exists_marker = await placeholder_service.check_template_markers_exists(model.placeholders, et.id)
                 exists_markers.append(exists_marker)
             if exists_markers and True in exists_markers:
                 index_true = exists_markers.index(True)
@@ -89,22 +89,22 @@ async def create_template_with_markers(model: schemas.TemplateCreateMarker):
             markers=[]
         )
 
-        for marker in model.markers:
-            marker: schemas.BaseMarker = schemas.BaseMarker(
+        for marker in model.placeholders:
+            marker: schemas.Placeholder = schemas.Placeholder(
                 name=marker.name,
                 description=marker.description,
-                options=marker.options,
+                options=marker.values,
                 template_id=template_retrieve.id
             )
-            base_marker = await base_marker_service.create_base_marker(marker)
-            base_marker: schemas.BaseMarkerRetrieve = schemas.BaseMarkerRetrieve(
-                id=base_marker.id,
-                name=base_marker.name,
-                description=base_marker.description,
-                options=base_marker.options,
-                template_id=base_marker.template_id
+            placeholder = await placeholder_service.create_placeholder(marker)
+            placeholder: schemas.PlaceholderRetrieve = schemas.PlaceholderRetrieve(
+                id=placeholder.id,
+                name=placeholder.name,
+                description=placeholder.description,
+                options=placeholder.values,
+                template_id=placeholder.template_id
             )
-            template_retrieve.markers.append(base_marker)
+            template_retrieve.placeholders.append(placeholder)
 
         return template_retrieve
     except Exception as e:
@@ -152,7 +152,7 @@ async def _transform_results_to_template_retrieve(result):
 
     if not result:
         return []
-    for template, base_marker in result:
+    for template, placeholder in result:
 
         if template.id not in templates_dict:
             templates_dict[template.id] = schemas.TemplateRetrieve(
@@ -160,20 +160,20 @@ async def _transform_results_to_template_retrieve(result):
                 base=template.base,
                 description=template.description,
                 expected_result=template.expected_result,
-                markers=[]
+                placeholders=[]
             )
 
-        if base_marker:
-            base_marker_retrieve = schemas.BaseMarkerRetrieve(
-                id=base_marker.id,
-                name=base_marker.name,
-                description=base_marker.description,
-                options=base_marker.options,
-                template_id=base_marker.template_id
+        if placeholder:
+            placeholder_retrieve = schemas.PlaceholderRetrieve(
+                id=placeholder.id,
+                name=placeholder.name,
+                description=placeholder.description,
+                values=placeholder.values,
+                template_id=placeholder.template_id
             )
 
-            if base_marker_retrieve not in templates_dict[template.id].markers:
-                templates_dict[template.id].markers.append(base_marker_retrieve)
+            if placeholder_retrieve not in templates_dict[template.id].placeholders:
+                templates_dict[template.id].placeholders.append(placeholder_retrieve)
 
     return list(templates_dict.values())
 

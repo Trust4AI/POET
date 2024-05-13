@@ -22,17 +22,30 @@ async def generate_input(n):
         RuntimeError(e)
 
 
-async def generate_with_template(template: Union[List[schemas.TemplateCreateMarker], schemas.TemplateCreateMarker],
-                                 n: int, save):
-    if save and isinstance(template, List):
-        return await _generate_with_templates(template, n)
-    elif save and not isinstance(template, List):
-        return await _generate_with_template(template, n)
-    elif not save and isinstance(template, List):
-        return await _generate_with_templates_whithout_save(template, n)
-    elif not save and not isinstance(template, List):
-        print("1", template, n)
-        return await _generate_with_template_whithout_save(template, n)
+async def generate_with_template_id(template_id, n, mode):
+    template = await template_service.get_template_by_id(template_id)
+    result = cast_templates(template)
+    result = result[0].build(n, mode)
+    return cast_input(result)
+
+
+async def generate_with_template(template:schemas.TemplateCreateMarker, n: int, mode: str):
+    template = schemas.Template(**template.__dict__)
+    result = template.build(n, mode)
+    return cast_input(result)
+
+
+# async def generate_with_template(template: Union[List[schemas.TemplateCreateMarker], schemas.TemplateCreateMarker],
+#                                  n: int, save):
+#     if save and isinstance(template, List):
+#         return await _generate_with_templates(template, n)
+#     elif save and not isinstance(template, List):
+#         return await _generate_with_template(template, n)
+#     elif not save and isinstance(template, List):
+#         return await _generate_with_templates_whithout_save(template, n)
+#     elif not save and not isinstance(template, List):
+#         print("1", template, n)
+#         return await _generate_with_template_whithout_save(template, n)
 
 
 async def _generate_with_template(template: schemas.TemplateCreateMarker, n):
@@ -68,3 +81,5 @@ def cast_templates(templates):
 
 def cast_input(inputs):
     return [schemas.Input(query=input, type=inputs[2], expected_result=inputs[1]) for input in inputs[0]]
+
+
