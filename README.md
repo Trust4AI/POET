@@ -1,12 +1,9 @@
-## Trust4AI Bias Generator Component based on static datasets
+## POET: Template-Based Prompt Generator
 
-This project serves as a template for the creation of components for testing LLMs in the context of the Trust4AI project. Each component will provide a REST API, a Postman collection, and the docker files required for deployment.
-
-## Usage
-Provide a description of the component, including several use examples and, if possible, a video demo.
-
-## Deployment
-Provide a description of the required steps for deploying the component.
+POET is a template-based prompt generator for testing large language models (LLMs). It leverages customizable JSON 
+templates to create diverse prompts, enabling comprehensive evaluation across various scenarios and inputs. 
+Integration options include a Docker image launching a REST API with interactive documentation, facilitating its use 
+and integration. POET is part of the [Trust4AI](https://trust4ai.github.io/trust4ai/) research project.
 
 ## Repository structure
 
@@ -20,7 +17,7 @@ This repository is structured as follows:
 -  `docker/Dockerfile`: This file is a script containing a series of instructions and commands used to build a Docker image.
 -  `docker/docker-compose.yml`: This YAML file allows you to configure application services, networks, and volumes in a single file, facilitating the orchestration of containers.
 
-## Local
+## Deployment
 ### Installation
 If you haven't downloaded the project yet, first clone the repository:
 ```bash
@@ -90,7 +87,7 @@ To stop the container, execute the following command:
 docker-compose down
 ```
 
-## API
+## Usage
 To view the API documentation, access the following URL:
 ```
 http://localhost:8000/api/v1/docs
@@ -100,7 +97,7 @@ Or
 http://localhost:8000/api/v1/redoc
 ```
 
-### Demo
+### Example
 Below, an example is provided for generating a list of sentences with gender bias. For this, I will use one of the templates 
 found in the database, which can be directly located in the folder ```src/default_template```.
 
