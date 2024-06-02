@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI
 
 from core.settings import Settings
 from routers.placeholder_router import router as base_marker_router
@@ -8,7 +8,9 @@ from routers.template_router import router as template_router
 
 PREFIX = '/api/v1'
 
-app = FastAPI(openapi_url="/api/v1/openapi.json", docs_url="/api/v1/docs", redoc_url="/api/v1/redoc")
+app = FastAPI(openapi_url="/api/v1/openapi.json", docs_url="/api/v1/docs", redoc_url="/api/v1/redoc",
+              description="Template-Based Prompt Generator", version="1.0.0", title="POET API",
+              servers=[{"url": "/"}])
 
 settings = Settings()
 
