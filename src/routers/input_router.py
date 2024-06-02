@@ -29,7 +29,7 @@ async def generate_input(n: int = 100):
              responses={200: {"description": "List of inputs"},
                         500: {"description": "Internal Server Error", "model": schemas.ErrorResponse}})
 async def generate_with_template(template: schemas.TemplateCreateMarker, n: int = 100,
-                                 mode: str = Union["random", "sequential"]):
+                                 mode: str = Union["random", "exhaustive"]):
     result = await input_service.generate_with_template(template, n, mode)
     return result[:n]
 

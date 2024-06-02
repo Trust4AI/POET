@@ -1,4 +1,7 @@
+import uuid
 from typing import Union
+import pandas as pd
+from fastapi import HTTPException
 
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError, DataError, SQLAlchemyError, NoResultFound
@@ -188,3 +191,21 @@ async def _check_template_base_exists(model: schemas.TemplateBase):
         return None
     except Exception as e:
         RuntimeError(e)
+
+
+async def download_templates_csv():
+    try:
+        templates = await get_all_templates()  # Asumiendo que esta función devuelve una lista de objetos Template
+        if not templates:
+            raise HTTPException(status_code=404, detail="No templates found")
+
+        # Crear un DataFrame de Pandas a partir de los datos
+        csv_data = pd.DataFrame([template.dict() for template in templates])
+
+        # Generar un nombre de archivo único para evitar conflictos de concurrencia
+        file_name = f'./src/downloads/template-{uuid.uuid4()}.csv'
+        csv_data.to_csv(file_name, index=False)
+
+        return file_name
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

@@ -150,3 +150,9 @@ class TestResult(BaseModel):
 
 class ErrorResponse(BaseModel):
     detail: str
+
+
+class FileResponse:
+    def __init__(self, filename: str, content: bytes):
+        self.filename = filename
+        self.content = content

@@ -1,6 +1,7 @@
 from typing import List, Union
 
 from fastapi import APIRouter, HTTPException, Body
+from fastapi.responses import FileResponse
 
 from core.models import models
 from core.schemas import schemas
@@ -13,20 +14,35 @@ router = APIRouter()
             response_description="Get all templates",
             description="Get all templates",
             summary="Get all templates",
-            responses={200: {"description": "List of templates"}, 500: {"description": "Internal Server Error", "model": schemas.ErrorResponse}})
+            responses={200: {"description": "List of templates"},
+                       500: {"description": "Internal Server Error", "model": schemas.ErrorResponse}})
 async def get_all_templates():
     try:
         result = await template_service.get_all_templates()
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))     
+        raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))
+
+
+@router.get(path="/download")
+async def download_templates_csv():
+    try:
+        result = await template_service.download_templates_csv()
+        if not result:
+            raise HTTPException(status_code=404, detail="File not found")
+        return FileResponse(result, media_type="text/csv", filename=result)
+    except ValueError as ve:
+        raise HTTPException(status_code=422, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))
 
 
 @router.get("/{template_id}", response_model=schemas.TemplateRetrieve,
             response_description="Get template by id",
             description="Get template by id",
             summary="Get template by id",
-            responses={200: {"description": "Template"}, 404: {"description": "Template not found", "model": schemas.ErrorResponse},
+            responses={200: {"description": "Template"},
+                       404: {"description": "Template not found", "model": schemas.ErrorResponse},
                        500: {"description": "Internal Server Error", "model": schemas.ErrorResponse}})
 async def get_template_by_id(template_id: int):
     try:
@@ -43,7 +59,7 @@ async def get_template_by_id(template_id: int):
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))
-    
+
 
 # @router.post("", response_model=schemas.TemplateRetrieve, status_code=201,
 #              response_description="Create a new template",
