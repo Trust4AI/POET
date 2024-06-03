@@ -31,7 +31,7 @@ async def generate_input(n: int = 100):
              responses={200: {"description": "List of inputs"},
                         500: {"description": "Internal Server Error", "model": schemas.ErrorResponse}})
 async def generate_with_template(template: schemas.TemplateCreateMarker, n: int = 100,
-                                 mode: str = Union["random", "exhaustive"]):
+                                 mode: schemas.ModeEnum = schemas.ModeEnum.random):
     result = await input_service.generate_with_template(template, n, mode)
     return result[:n]
 
@@ -43,6 +43,6 @@ async def generate_with_template(template: schemas.TemplateCreateMarker, n: int 
             responses={200: {"description": "List of inputs"},
                        500: {"description": "Internal Server Error"}})
 async def generate_with_template_id(template_id: int, n: int = 100,
-                                    mode: str = Union["random", "sequential"]):
+                                    mode: schemas.ModeEnum = schemas.ModeEnum.random):
     result = await input_service.generate_with_template_id(template_id, n, mode)
     return result[:n]

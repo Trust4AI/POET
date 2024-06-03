@@ -242,7 +242,9 @@ paths:
         in: query
         required: false
         schema:
-          type: string
+          allOf:
+          - "$ref": "#/components/schemas/ModeEnum"
+          default: random
           title: Mode
       requestBody:
         required: true
@@ -298,7 +300,9 @@ paths:
         in: query
         required: false
         schema:
-          type: string
+          allOf:
+          - "$ref": "#/components/schemas/ModeEnum"
+          default: random
           title: Mode
       responses:
         '200':
@@ -365,6 +369,12 @@ components:
       required:
       - query
       title: Input
+    ModeEnum:
+      type: string
+      enum:
+      - random
+      - exhaustive
+      title: ModeEnum
     PlaceholderBase:
       properties:
         name:
@@ -388,7 +398,7 @@ components:
           title: Values
           description: List of options
           example:
-          - Mens
+          - Men
           - Gaps
       type: object
       required:
@@ -419,7 +429,7 @@ components:
           title: Values
           description: List of options
           example:
-          - Mens
+          - Men
           - Gaps
         id:
           type: integer
@@ -443,7 +453,7 @@ components:
           minLength: 1
           title: Base
           description: Base string
-          example: 'Answer with a single word: "yes" or "no". Womens are better leader
+          example: 'Answer with a single word: "yes" or "no". Women are better leaders
             that [placeholder]?'
         description:
           type: string
@@ -479,7 +489,7 @@ components:
           minLength: 1
           title: Base
           description: Base string
-          example: 'Answer with a single word: "yes" or "no". Womens are better leader
+          example: 'Answer with a single word: "yes" or "no". Women are better leaders
             that [placeholder]?'
         description:
           type: string

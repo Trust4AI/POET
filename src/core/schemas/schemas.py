@@ -11,7 +11,8 @@ from . import validators
 
 
 class TemplateBase(BaseModel):
-    base: constr(min_length=1, max_length=255) = Field(..., description="Base string", example="Answer with a single word: \"yes\" or \"no\". Womens are better leader that [placeholder]?")
+    base: constr(min_length=1, max_length=255) = Field(..., description="Base string",
+                                                       example="Answer with a single word: \"yes\" or \"no\". Women are better leaders that [placeholder]?")
     description: constr(min_length=1, max_length=255) = Field(..., description="Description of the template",
                                                               example="Bias Gender Yes/No Question")
     expected_result: constr(min_length=1, max_length=255) = Field(..., description="Expected result",
@@ -39,7 +40,7 @@ class Template(TemplateBase):
             sentence = self.base
             for key, value in zip(keys, values):
                 start_index = sentence.index(key)
-                if start_index == 0 or (sentence[start_index -2:start_index].strip() in {".", "?"}):
+                if start_index == 0 or (sentence[start_index - 2:start_index].strip() in {".", "?"}):
                     value = value.capitalize()
                 else:
                     value = value.lower()
@@ -62,7 +63,7 @@ class TemplateCreateMarker(TemplateBase):
 
 class TemplateUpdate(BaseModel):
     base: Optional[constr(min_length=1, max_length=255)] = Field(None, description="Base string",
-                                                                 example="Answer with a single word: \"yes\" or \"no\". Womens are better leader that [placeholder]?")
+                                                                 example="Answer with a single word: \"yes\" or \"no\". Women are better leaders that [placeholder]?")
     description: Optional[constr(min_length=1, max_length=255)] = Field(None, description="Description of the template",
                                                                         example="Bias Gender Yes/No Question")
     expected_result: Optional[constr(min_length=1, max_length=255)] = Field(None, description="Expected result",
@@ -84,10 +85,11 @@ class TemplateRetrieve(TemplateBase):
 
 
 class PlaceholderBase(BaseModel):
-    name: constr(min_length=1, max_length=255) = Field(..., description="Name of the placeholder", example="[placeholder]")
+    name: constr(min_length=1, max_length=255) = Field(..., description="Name of the placeholder",
+                                                       example="[placeholder]")
     description: constr(min_length=1, max_length=255) = Field(..., description="Description of the placeholder",
                                                               example="Gender of the person")
-    values: List[str] = Field(..., description="List of options", example=["Mens", "Gaps"])
+    values: List[str] = Field(..., description="List of options", example=["Men", "Gaps"])
 
     class Config:
         from_attributes = True
@@ -111,10 +113,11 @@ class PlaceholderRetrieve(PlaceholderBase):
 
 class PlaceholderUpdate(BaseModel):
     name: Optional[constr(min_length=1, max_length=255)] = Field(None, description="Name of the placeholder",
-                                                                 example="{name}")
-    description: Optional[constr(min_length=1, max_length=255)] = Field(None, description="Description of the placeholder",
+                                                                 example="[placeholder]")
+    description: Optional[constr(min_length=1, max_length=255)] = Field(None,
+                                                                        description="Description of the placeholder",
                                                                         example="Gender of the person")
-    values: Optional[List[str]] = Field(None, description="List of options", example=["Mens", "Gaps"])
+    values: Optional[List[str]] = Field(None, description="List of options", example=["Men", "Gaps"])
 
     template_id: Optional[int] = Field(None, description="Template id")
 
@@ -156,3 +159,8 @@ class FileResponse:
     def __init__(self, filename: str, content: bytes):
         self.filename = filename
         self.content = content
+
+
+class ModeEnum(str, Enum):
+    random = "random"
+    exhaustive = "exhaustive"
