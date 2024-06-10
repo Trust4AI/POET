@@ -2,19 +2,11 @@
 
 POET is a template-based prompt generator for testing large language models (LLMs). It leverages customizable JSON 
 templates to create diverse prompts, enabling comprehensive evaluation across various scenarios and inputs.
-This tool is complementary to the [EVA](https://github.com/Trust4AI/EVA), a tool for classifies text inputs.
+This tool is complementary to [EVA](https://github.com/Trust4AI/EVA), a tool for classifies text inputs.
 Integration options include a Docker image launching a REST API with interactive documentation, facilitating its use 
 and integration. POET is part of the [Trust4AI](https://trust4ai.github.io/trust4ai/) research project.
 
-## Index
-1. [Usage](#usage)
-    1. [Example](#example)
-2. [Repository structure](#repository-structure)
-3. [Deployment](#deployment)
-    1. [Installation](#installation)
-    2. [Execution](#execution)
-    3. [Docker](#docker)
-4. [License and funding](#license-and-funding)
+git
 
 ## Usage
 To view the API documentation, access the following URL:
@@ -196,12 +188,12 @@ And the result of the request would be:
 This repository is structured as follows:
 
 -  `docker/.dockerignore`: This file tells Docker which files and directories to ignore when building an image.
--  `docker/.gitignore`: This file is used by Git to exclude files and directories from version control.
 -  `docker/Dockerfile`: This file is a script containing a series of instructions and commands used to build a Docker image.
 -  `docker/docker-compose.yml`: This YAML file allows you to configure application services, networks, and volumes in a single file, facilitating the orchestration of containers.
 -  `docs/openapi/spec.yaml`: This file is used to describe the entire API, including available endpoints, operations on each endpoint, operation parameters, and the structure of the response objects. It's written in YAML format following the [OpenAPI Specification](https://spec.openapis.org/oas/latest.html) (OAS).
 -  `docs/postman/collection.json`: This file is a collection of API requests saved in JSON format for use with Postman.
 -  `src/`: This directory contains the source code for the project.
+-  `.gitignore`: This file is used by Git to exclude files and directories from version control.
 -  `requirements.txt`: This file lists the Python libraries required by the project.
 
 ## Deployment
@@ -247,7 +239,7 @@ alembic upgrade head
 ```
 This will generate the migration files and create the tables in the database.
 
-To run the project, execute the following command from the ```src/``` directory:
+To run the project, execute the following command from the root directory:
 ```bash
 python src/main.py
 ```
