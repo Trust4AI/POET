@@ -202,6 +202,7 @@ This repository is structured as follows:
 -  `docs/openapi/spec.yaml`: This file is used to describe the entire API, including available endpoints, operations on each endpoint, operation parameters, and the structure of the response objects. It's written in YAML format following the [OpenAPI Specification](https://spec.openapis.org/oas/latest.html) (OAS).
 -  `docs/postman/collection.json`: This file is a collection of API requests saved in JSON format for use with Postman.
 -  `src/`: This directory contains the source code for the project.
+-  `requirements.txt`: This file lists the Python libraries required by the project.
 
 ## Deployment
 ### Installation
