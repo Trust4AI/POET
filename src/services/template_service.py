@@ -1,3 +1,5 @@
+import glob
+import os
 import uuid
 from typing import Union
 import pandas as pd
@@ -12,6 +14,8 @@ from core.models import models
 from core.models.database import engine_async
 from core.schemas import schemas
 from services import placeholder_service
+
+DOWNLOADS_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'downloads')
 
 
 async def get_all_templates():
@@ -195,17 +199,26 @@ async def _check_template_base_exists(model: schemas.TemplateBase):
 
 async def download_templates_csv():
     try:
-        templates = await get_all_templates()  # Asumiendo que esta función devuelve una lista de objetos Template
+        _clean_downloads_folder()
+        templates = await get_all_templates()
         if not templates:
             raise HTTPException(status_code=404, detail="No templates found")
 
-        # Crear un DataFrame de Pandas a partir de los datos
         csv_data = pd.DataFrame([template.dict() for template in templates])
 
-        # Generar un nombre de archivo único para evitar conflictos de concurrencia
-        file_name = f'./src/downloads/template-{uuid.uuid4()}.csv'
+        file_name = os.path.join(DOWNLOADS_FOLDER, f'template-{uuid.uuid4()}.csv')
         csv_data.to_csv(file_name, index=False)
 
         return file_name
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+def _clean_downloads_folder():
+    files = glob.glob(os.path.join(DOWNLOADS_FOLDER, '*'))
+
+    if len(files) > 10:
+        files.sort(key=os.path.getctime)
+
+        for file in files[:len(files) - 10]:
+            os.remove(file)

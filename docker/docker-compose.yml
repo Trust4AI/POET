@@ -4,8 +4,6 @@ services:
   mariadb:
     image: mariadb
     restart: always
-    env_file:
-      - ../.env
     environment:
       MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DATABASE_NAME}
@@ -17,7 +15,6 @@ services:
       - mariadb_data:/var/lib/mysql
 
   fastapi_app:
-    # image: trust4ai-bias-generator-ds:latest
     build:
       context: ..
       dockerfile: docker/Dockerfile
@@ -26,13 +23,11 @@ services:
       - mariadb
     ports:
       - "${HOST_PORT}:8000"
-    env_file:
-      - ../.env
     environment:
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_USERNAME=${DATABASE_USERNAME}
       - DATABASE_PASSWORD=${DATABASE_PASSWORD}
-      - DATABASE_HOSTNAME=mariadb
+      - DATABASE_HOSTNAME=mariadb # This is the service name of the mariadb container.
       - DATABASE_PORT=${DATABASE_PORT}
 
 volumes:

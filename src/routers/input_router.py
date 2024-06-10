@@ -18,7 +18,6 @@ router = APIRouter()
                         500: {"description": "Internal Server Error", "model": schemas.ErrorResponse}})
 async def generate_input(n: int = 100):
     result = await input_service.generate_input(n)
-    result = sample(result, n)
     if result is None:
         return []
     return result
