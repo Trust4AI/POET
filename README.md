@@ -6,6 +6,15 @@ This tool is complementary to [EVA](https://github.com/Trust4AI/EVA), a tool for
 Integration options include a Docker image launching a REST API with interactive documentation, facilitating its use 
 and integration. POET is part of the [Trust4AI](https://trust4ai.github.io/trust4ai/) research project.
 
+## Index
+1. [Usage](#usage)
+    1. [Example](#example)
+2. [Repository structure](#repository-structure)
+3. [Deployment](#deployment)
+    1. [Installation](#installation)
+    2. [Execution](#execution)
+    3. [Docker](#docker)
+4. [License and funding](#license-and-funding)
 
 ## Usage
 To view the API documentation, access the following URL:
