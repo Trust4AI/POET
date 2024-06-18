@@ -2,11 +2,16 @@
 
 sleep 10
 
-# echok "DATABASE_NAME=${DATABASE_NAME}\nDATABASE_USER=${DATABASE_USER}\nDATABASE_HOST=${DATABASE_HOST}\nDATABASE_PORT=${DATABASE_PORT}\nDATABASE_PASSWORD=${DATABASE_PASSWORD}\nDATABASE_ROOT_PASSWORD=${DABASE_ROOT_PASSWORD}" > .env
+mkdir -p /app/alembic/versions
 
-alembic revision --autogenerate -m "Initial migration"
+# Generar la migración inicial si no existe
+if [ -z "$(ls -A /app/alembic/versions)" ]; then
+   echo "Generating initial migration..."
+   alembic -c /app/alembic.ini revision --autogenerate -m "Initial migration"
+fi
 
 alembic upgrade head
+
 
 export PYTHONPATH="${PYTHONPATH}:/app"
 
@@ -14,11 +19,8 @@ chmod +x default_template/load.py
 
 exec uvicorn main:app --host 0.0.0.0 --port 8000 &
 
-sleep 10
+sleep 5
 
 python default_template/load.py
 
 wait
-
-
-
