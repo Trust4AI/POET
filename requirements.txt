@@ -9,5 +9,4 @@ aiomysql==0.2.0
 sqlmodel==0.0.16
 alembic==1.13.1
 requests==2.26.0
-pyyaml==6.0
 pandas==2.2.2
