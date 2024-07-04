@@ -30,6 +30,10 @@ class Template(TemplateBase):
 
     def build(self, n: int, mode: str = "random"):
 
+        ma_generations = 50000
+
+        n = min(n, ma_generations)
+
         combinations = {placeholder.name: placeholder.values for placeholder in self.placeholders}
 
         keys = [key for key in combinations.keys() if key in self.base]
