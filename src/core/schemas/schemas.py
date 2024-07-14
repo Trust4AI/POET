@@ -28,7 +28,7 @@ class TemplateBase(BaseModel):
 class Template(TemplateBase):
     placeholders: list['Placeholder']
 
-    def build(self, n: int, mode: str = "random"):
+    def build(self, n: int = 50000, mode: str = "random"):
 
         ma_generations = 50000
 

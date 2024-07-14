@@ -19,4 +19,7 @@ src/alembic/versions/*
 # results
 src/results/*
 
+# download
+src/downloads/*
+
 

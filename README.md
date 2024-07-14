@@ -2,7 +2,7 @@
 
 POET is a template-based prompt generator for testing large language models (LLMs). It leverages customizable JSON
 templates to create diverse prompts, enabling comprehensive evaluation across various scenarios and inputs.
-This tool is complementary to [EVA](https://github.com/Trust4AI/EVA), a tool for classifies text inputs.
+This tool is complementary to [EVA](https://github.com/Trust4AI/EVA), a tool for classifying text inputs.
 Integration options include a Docker image launching a REST API with interactive documentation, facilitating its use
 and integration. POET is part of the [Trust4AI](https://trust4ai.github.io/trust4ai/) research project.
 
@@ -33,9 +33,8 @@ http://localhost:8000/api/v1/redoc
 
 ### Example
 
-Below, an example is provided for generating a list of sentences with gender bias. For this, I will use one of the
-templates
-found in the database, which can be directly located in the folder ```src/default_template```.
+Below, we illustrate how to generate a list of sentences with gender bias with the prompt generator POET. For this, I 
+will use one of the templates found in the folder ```src/default_template```.
 
 We will use an example of the template ```src/default_template/Bias_Gender_YN_template.json``` and the
 endpoint ```input/generateWithTemplate```.
@@ -226,7 +225,7 @@ This repository is structured as follows:
 
 ## Deployment
 
-In this section, we will explain how to deploy the project locally. Additionally, we will explain how to deploy the
+In this section, we explain how to deploy the project locally. Additionally, we explain how to deploy the
 project using Docker if you prefer to use it.
 
 This project requires Python 3.8 or higher to run. If you don't have Python installed, you can download it from the
@@ -234,7 +233,7 @@ This project requires Python 3.8 or higher to run. If you don't have Python inst
 
 ### Installation
 
-If you want to run the project locally, you will need to download the project and install the required libraries.
+If you want to run the project locally, you need to download the project and install the required libraries.
 
 ```bash
 git clone https://github.com/Trust4AI/POET.git
@@ -273,10 +272,8 @@ The environment variables are as follows:
 - ```HOST_PORT```: Port where the application will run **only for the Docker deployment**.
 
 Before creating the database tables, ensure you have a relational database management system installed. We recommend
-using
-(MariaDB)[https://mariadb.org] or (MySQL)[https://www.mysql.com] for this project due to their performance and
-compatibility
-with our tools.
+using (MariaDB)[https://mariadb.org] or (MySQL)[https://www.mysql.com] for this project due to their performance and
+compatibility with our tools.
 
 Once your database is set up, navigate to the `src/` directory in the project folder to execute the following commands:
 
@@ -286,6 +283,12 @@ alembic upgrade head
 ```
 
 This will generate the migration files and create the tables in the database.
+
+And now, we can load the default templates into the database. To do this, run the following script from the root:
+
+```bash
+python ./src/default_template/load.py
+```
 
 To run the project, execute the following command from the root directory:
 

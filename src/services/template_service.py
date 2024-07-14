@@ -198,13 +198,46 @@ async def _check_template_base_exists(model: schemas.TemplateBase):
 
 
 async def download_templates_csv():
+
+    result = []
+
+    def _placeholder_in(template, generated):
+
+        _result = []
+
+        for placeholder in template.placeholders:
+            pi = [p for p in placeholder.values if p.strip().lower() in generated.strip().lower()]
+            _result.extend(list(set(pi)))
+
+        return _result
+
     try:
         _clean_downloads_folder()
         templates = await get_all_templates()
         if not templates:
             raise HTTPException(status_code=404, detail="No templates found")
 
-        csv_data = pd.DataFrame([template.dict() for template in templates])
+        for template in templates:
+            id = template.id
+            template = schemas.Template(**template.dict())
+            generated = template.build(mode='exhaustive')[0]
+
+            for g in generated:
+                csv_template_data = {
+                    'template_id': id,
+                    'template_base': template.base,
+                    'placeholders': '',
+                    'expected_result': template.expected_result,
+                    'generated_text': ''
+                }
+                placeholders = _placeholder_in(template, g)
+                l = len([p for p in template.placeholders])
+                placeholders = _remove_substrings([p.lower() for p in placeholders], l)
+                csv_template_data['placeholders'] = '//'.join(placeholders)
+                csv_template_data['generated_text'] = g
+                result.append(csv_template_data)
+
+        csv_data = pd.DataFrame(result)
 
         file_name = os.path.join(DOWNLOADS_FOLDER, f'template-{uuid.uuid4()}.csv')
         csv_data.to_csv(file_name, index=False)
@@ -222,3 +255,16 @@ def _clean_downloads_folder():
 
         for file in files[:len(files) - 10]:
             os.remove(file)
+
+
+def _remove_substrings(groups, l):
+
+    if len(groups) == l:
+        return groups
+    groups.sort(key=len, reverse=True)
+
+    result = []
+    for i, group in enumerate(groups):
+        if not any(group in other for other in groups[:i]):
+            result.append(group)
+    return result

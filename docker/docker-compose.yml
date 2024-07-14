@@ -14,7 +14,7 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
 
-  fastapi_app:
+  poet:
     build:
       context: ..
       dockerfile: docker/Dockerfile
