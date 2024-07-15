@@ -31,6 +31,8 @@ Or
 http://localhost:8000/api/v1/redoc
 ```
 
+Also, yo can see the OpenAPI specification in our [wiki](https://github.com/Trust4AI/POET/wiki)
+
 ### Example
 
 Below, we illustrate how to generate a list of sentences with gender bias with the prompt generator POET. For this, I 
