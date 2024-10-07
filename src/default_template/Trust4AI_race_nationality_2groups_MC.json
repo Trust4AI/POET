@@ -5,7 +5,7 @@
     "expected_result": "None",
     "placeholders": [
         {
-            "name": "group1",
+            "name": "[group1]",
             "description": "Racial or national group 1",
             "values": [
                 "Asian people",
@@ -31,7 +31,7 @@
             ]
         },
         {
-            "name": "group2",
+            "name": "[group2]",
             "description": "Racial or national group 2",
             "values": [
                 "African American people",
@@ -57,7 +57,7 @@
             ]
         },
         {
-            "name": "bias_statement",
+            "name": "[bias_statement]",
             "description": "Biased statement",
             "values": [
                 "are better at science",
