@@ -9,11 +9,13 @@ from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError, DataError, SQLAlchemyError, NoResultFound
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
+from tqdm import tqdm
 
 from core.models import models
 from core.models.database import engine_async
 from core.schemas import schemas
 from services import placeholder_service
+from services.input_service import cast_templates
 
 DOWNLOADS_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'downloads')
 
@@ -34,7 +36,7 @@ async def get_all_templates():
         raise RuntimeError(e)
 
 
-async def get_template_by_id(template_id: int):
+async def  get_template_by_id(template_id: str):
     try:
         async with AsyncSession(engine_async) as session:
             query = select(models.Template, models.Placeholder).join(models.Placeholder, isouter=True).where(
@@ -148,7 +150,7 @@ async def delete_template(template_id: int):
         RuntimeError(e)
 
 
-async def exists(template_id: int):
+async def exists(template_id: str):
     template = await get_template_by_id(template_id)
     template = template[0] if template else None
     return True if template else False
@@ -197,54 +199,150 @@ async def _check_template_base_exists(model: schemas.TemplateBase):
         RuntimeError(e)
 
 
-async def download_templates_csv():
+async def download_templates_csv(n=50000, mode='exhaustive', template_id=None):
 
-    result = []
+    if n is None:
+        n = 50000
 
-    def _placeholder_in(template, generated):
-
-        _result = []
-
-        for placeholder in template.placeholders:
-            pi = [p for p in placeholder.values if p.strip().lower() in generated.strip().lower()]
-            _result.extend(list(set(pi)))
-
-        return _result
+    if mode is None:
+        mode = 'exhaustive'
 
     try:
-        _clean_downloads_folder()
-        templates = await get_all_templates()
-        if not templates:
-            raise HTTPException(status_code=404, detail="No templates found")
+        async with AsyncSession(engine_async) as session:
+            result = []
 
-        for template in templates:
-            id = template.id
-            template = schemas.Template(**template.dict())
-            generated = template.build(mode='exhaustive')[0]
+            if template_id:
+                template = await get_template_by_id(template_id)
+                if not template:
+                    raise HTTPException(status_code=404, detail="Template not found")
 
-            for g in generated:
-                csv_template_data = {
-                    'template_id': id,
-                    'template_base': template.base,
-                    'placeholders': '',
-                    'expected_result': template.expected_result,
-                    'generated_text': ''
+                templates = cast_templates(template)
+            else:
+                templates = cast_templates(await get_all_templates())
+
+            templates_build = [t.build_csv(n=n, mode=mode) for t in templates]
+
+            for r in tqdm(templates_build, desc='Generating CSV', total=len(templates_build)):
+                template_id = r[0]
+
+                template = await get_template_by_id(template_id)
+                expected_result = template[0].expected_result
+
+                builds = r[1]
+
+                oracle_type = ''
+
+                if 'ex' in template_id.lower():
+                    oracle_type = 'three_reasos'
+                elif 'yn' in template_id.lower():
+                    oracle_type = 'yes_no'
+                elif 'wh' in template_id.lower():
+                   oracle_type = 'wh_question'
+                elif 'mc' in template_id.lower():
+                    oracle_type = 'mc'
+
+                for b in builds:
+                    placeholders = b[0]
+                    build = b[1]
+                    csv_template_data = {
+                        'template_id': template_id,
+                        'number_placeholders': len(placeholders)-1,
+                    }
+
+                    group_keys = [key for key in placeholders.keys() if "group" in key.lower()]
+
+                    for i, group_key in enumerate(group_keys, start=1):
+                        csv_template_data[f'group_{i}'] = placeholders[group_key]
+
+                    csv_template_data['biased_statement'] = placeholders['[bias_statement]']
+                    csv_template_data['prompt'] = build
+                    csv_template_data['oracle_type'] = oracle_type
+                    csv_template_data['expected_result'] = expected_result
+
+                    result.append(csv_template_data)
+
+            max_groups = max(
+                (len([key for key in r.keys() if key.startswith('group_')]) for r in result),
+                default=0
+            )
+
+            for r in result:
+                for i in range(1, max_groups + 1):
+                    if f'group_{i}' not in r:
+                        r[f'group_{i}'] = None
+
+                non_group_keys = {key: r[key] for key in r if not key.startswith('group_')}
+                group_keys = {key: r[key] for key in r if key.startswith('group_')}
+
+                ordered_dict = {
+                    'template_id': non_group_keys.get('template_id'),
+                    'number_placeholders': non_group_keys.get('number_placeholders'),
+                    **dict(sorted(group_keys.items(), key=lambda x: int(x[0].split('_')[1]))),  # Ordenar group_n
+                    'biased_statement': non_group_keys.get('biased_statement'),
+                    'prompt': non_group_keys.get('prompt'),
+                    'oracle_type': non_group_keys.get('oracle_type'),
+                    'expected_result': non_group_keys.get('expected_result'),
                 }
-                placeholders = _placeholder_in(template, g)
-                l = len([p for p in template.placeholders])
-                placeholders = _remove_substrings([p.lower() for p in placeholders], l)
-                csv_template_data['placeholders'] = '//'.join(placeholders)
-                csv_template_data['generated_text'] = g
-                result.append(csv_template_data)
 
-        csv_data = pd.DataFrame(result)
+                r.clear()
+                r.update(ordered_dict)
 
-        file_name = os.path.join(DOWNLOADS_FOLDER, f'template-{uuid.uuid4()}.csv')
-        csv_data.to_csv(file_name, index=False)
+            df = pd.DataFrame(result)
 
-        return file_name
+
+            csv_path = os.path.join(DOWNLOADS_FOLDER, f'template-{uuid.uuid4()}.csv')
+            df.to_csv(csv_path, sep=';', index=False)
+
+
+            return csv_path
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+    # def _placeholder_in(template, generated):
+    #
+    #     _result = []
+    #
+    #     for placeholder in template.placeholders:
+    #         pi = [p for p in placeholder.values if p.strip().lower() in generated.strip().lower()]
+    #         _result.extend(list(set(pi)))
+    #
+    #     return _result
+    #
+    # try:
+    #     _clean_downloads_folder()
+    #     templates = await get_all_templates()
+    #     if not templates:
+    #         raise HTTPException(status_code=404, detail="No templates found")
+    #
+    #     for template in templates:
+    #         id = template.id
+    #         template = schemas.Template(**template.dict())
+    #         generated = template.build(mode='exhaustive')[0]
+    #
+    #         for g in generated:
+    #             csv_template_data = {
+    #                 'template_id': id,
+    #                 'template_base': template.base,
+    #                 'placeholders': '',
+    #                 'expected_result': template.expected_result,
+    #                 'generated_text': ''
+    #             }
+    #             placeholders = _placeholder_in(template, g)
+    #             l = len([p for p in template.placeholders])
+    #             placeholders = _remove_substrings([p.lower() for p in placeholders], l)
+    #             csv_template_data['placeholders'] = '//'.join(placeholders)
+    #             csv_template_data['generated_text'] = g
+    #             result.append(csv_template_data)
+    #
+    #     csv_data = pd.DataFrame(result)
+    #
+    #     file_name = os.path.join(DOWNLOADS_FOLDER, f'template-{uuid.uuid4()}.csv')
+    #     csv_data.to_csv(file_name, index=False)
+    #
+    #     return file_name
+    # except Exception as e:
+    #     raise HTTPException(status_code=500, detail=str(e))
 
 
 def _clean_downloads_folder():

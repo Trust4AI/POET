@@ -26,6 +26,7 @@ class TemplateBase(BaseModel):
 
 
 class Template(TemplateBase):
+    id: Optional[str]
     placeholders: list['Placeholder']
 
     def build(self, n: int = 50000, mode: str = "random"):
@@ -40,6 +41,8 @@ class Template(TemplateBase):
 
         all_combinations = list(itertools.product(*(combinations[key] for key in keys)))
 
+        unique_combinations = [combo for combo in all_combinations if len(set(combo)) == len(combo)]
+
         def create_sentence(values):
             sentence = self.base
             for key, value in zip(keys, values):
@@ -52,10 +55,46 @@ class Template(TemplateBase):
             return sentence
 
         if mode == "exhaustive":
-            return [create_sentence(combo) for combo in all_combinations[:n]], self.expected_result, self.description
+            return [create_sentence(combo) for combo in unique_combinations[:n]], self.expected_result, self.id
         elif mode == "random":
-            selected_combinations = random.sample(all_combinations, min(n, len(all_combinations)))
-            return [create_sentence(combo) for combo in selected_combinations], self.expected_result, self.description
+            selected_combinations = random.sample(unique_combinations, min(n, len(unique_combinations)))
+            return [create_sentence(combo) for combo in selected_combinations], self.expected_result, self.id
+
+    def build_csv(self, n: int = 50000, mode: str = "random"):
+
+        ma_generations = 50000
+        n = min(n, ma_generations)
+
+        combinations = {placeholder.name: placeholder.values for placeholder in self.placeholders}
+        keys = [key for key in combinations.keys() if key in self.base]
+
+        all_combinations = list(itertools.product(*(combinations[key] for key in keys)))
+
+        unique_combinations = [combo for combo in all_combinations if len(set(combo)) == len(combo)]
+
+        def create_sentence(values):
+            sentence = self.base
+            for key, value in zip(keys, values):
+                start_index = sentence.index(key)
+                if start_index == 0 or (sentence[start_index - 2:start_index].strip() in {".", "?"}):
+                    value = value.capitalize()
+                else:
+                    value = value.lower()
+                sentence = sentence.replace(key, value)
+            return sentence
+
+        results = []
+        if mode == "exhaustive":
+            selected_combinations = unique_combinations[:n]
+        elif mode == "random":
+            selected_combinations = random.sample(unique_combinations, min(n, len(unique_combinations)))
+
+        for combo in selected_combinations:
+            placeholder_dict = {key: value for key, value in zip(keys, combo)}
+            sentence = create_sentence(combo)
+            results.append((placeholder_dict, sentence))
+
+        return self.id, results
 
 
 class TemplateCreateMarker(TemplateBase):
@@ -81,7 +120,7 @@ class TemplateUpdate(BaseModel):
 
 
 class TemplateRetrieve(TemplateBase):
-    id: int
+    id: str
     placeholders: list['PlaceholderRetrieve']
 
     def __repr__(self):
@@ -104,7 +143,7 @@ class PlaceholderBase(BaseModel):
 
 
 class Placeholder(PlaceholderBase):
-    template_id: Optional[int] = Field(None, description="Template id")
+    template_id: Optional[str] = Field(None, description="Template id")
 
     def replace(self, base: str) -> list[str]:
         return [base.replace(self.name, option) for option in self.values]
@@ -112,7 +151,7 @@ class Placeholder(PlaceholderBase):
 
 class PlaceholderRetrieve(PlaceholderBase):
     id: int
-    template_id: int = Field(None, description="Template id")
+    template_id: str = Field(None, description="Template id")
 
 
 class PlaceholderUpdate(BaseModel):
@@ -123,7 +162,7 @@ class PlaceholderUpdate(BaseModel):
                                                                         example="Gender of the person")
     values: Optional[List[str]] = Field(None, description="List of options", example=["Men", "Gaps"])
 
-    template_id: Optional[int] = Field(None, description="Template id")
+    template_id: Optional[str] = Field(None, description="Template id")
 
     class Config:
         from_attributes = True

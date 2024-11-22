@@ -54,7 +54,7 @@ async def save_markers(markers):
 async def load_template(template_data):
     try:
         template = models.Template(
-            id=int(template_data['id']),
+            id=str(template_data['id']),
             base=template_data['base'],
             description=template_data['description'],
             expected_result=template_data['expected_result']

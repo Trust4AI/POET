@@ -41,7 +41,7 @@ async def generate_with_template(template: schemas.TemplateCreateMarker, n: int 
             summary="Generate inputs with a template",
             responses={200: {"description": "List of inputs"},
                        500: {"description": "Internal Server Error"}})
-async def generate_with_template_id(template_id: int, n: int = 100,
+async def generate_with_template_id(template_id: str, n: int = 100,
                                     mode: schemas.ModeEnum = schemas.ModeEnum.random):
     result = await input_service.generate_with_template_id(template_id, n, mode)
     return result[:n]

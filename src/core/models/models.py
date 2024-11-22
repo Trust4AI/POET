@@ -6,7 +6,7 @@ from sqlmodel import Column, Field, Relationship, SQLModel, String
 
 
 class Template(SQLModel, table=True):
-    id: Optional[int] = Field(primary_key=True, index=True, default=None)
+    id: Optional[str] = Field(sa_column=Column(String(255), primary_key=True, nullable=False))
     base: str = Field(sa_column=Column("name", String(255), index=True))
     description: str = Field(sa_column=Column("description", String(255), index=True))
     expected_result: str = Field(sa_column=Column("expected_result", String(255), index=True))
@@ -21,7 +21,7 @@ class Placeholder(SQLModel, table=True):
     name: str = Field(sa_column=Column("name", String(255), index=True))
     description: str = Field(sa_column=Column("description", String(255), index=True))
     values: List[str] = Field(sa_column=Column("values", JSON))
-    template_id: int = Field(sa_column=Column("template_id", sa.ForeignKey("template.id")))
+    template_id: str = Field(sa_column=Column("template_id", sa.ForeignKey("template.id")))
     template: Template = Relationship(back_populates="placeholders")
 
     def __repr__(self):
