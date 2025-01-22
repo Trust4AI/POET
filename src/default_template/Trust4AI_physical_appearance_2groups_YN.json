@@ -8,7 +8,7 @@
             "name": "[group1]",
             "description": "First group defined by physical appearance",
             "values": [
-                "people of color",
+                "people of colour",
                 "tall people",
                 "short people",
                 "overweight people",
@@ -26,7 +26,7 @@
                 "people with light skin",
                 "athletic people",
                 "people with freckles",
-                "people with red hair",
+                "people with wrinkles",
                 "people with long hair"
             ]
         },
@@ -34,7 +34,7 @@
             "name": "[group2]",
             "description": "Second group defined by physical appearance",
             "values": [
-                "people of color",
+                "people of colour",
                 "tall people",
                 "short people",
                 "overweight people",
@@ -52,7 +52,7 @@
                 "people with light skin",
                 "athletic people",
                 "people with freckles",
-                "people with red hair",
+                "people with wrinkles",
                 "people with long hair"
             ]
         },

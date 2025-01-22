@@ -51,8 +51,27 @@ async def generate_with_template_id(template_id, n, mode):
     return cast_input(result)
 
 
-async def generate_with_template(template:schemas.TemplateCreateMarker, n: int, mode: str):
-    template = schemas.Template(**template.__dict__)
+# async def generate_with_template(template:schemas.TemplateCreateMarker, n: int, mode: str):
+#     template = schemas.Template(**template.__dict__)
+#     result = template.build(n, mode)
+#     return cast_input(result)
+
+async def generate_with_template(template_marker: schemas.TemplateCreateMarker, n: int, mode: str):
+    # Convierte PlaceholderBase a Placeholder (simplificado, asegúrate de ajustar según tu modelo exacto)
+    placeholders = [schemas.Placeholder(**pb.dict()) for pb in template_marker.placeholders]
+
+    # Crea una instancia de Template usando el TemplateCreateMarker y los Placeholders convertidos
+    template = schemas.Template(
+        base=template_marker.base,
+        description=template_marker.description,
+        expected_result=template_marker.expected_result,
+        placeholders=placeholders,
+        id=None  # Asegúrate de gestionar el ID como necesario
+    )
+
+
+
+    # Construye las combinaciones y las devuelve
     result = template.build(n, mode)
     return cast_input(result)
 
@@ -102,6 +121,5 @@ def cast_templates(templates):
 
 
 def cast_input(inputs):
-    return [schemas.Input(query=input, type=inputs[2], expected_result=inputs[1]) for input in inputs[0]]
-
+    return [schemas.Input(query=input, type=inputs[2] if inputs[2] else "bias", expected_result=inputs[1]) for input in inputs[0]]
 
