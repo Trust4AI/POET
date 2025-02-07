@@ -10,3 +10,4 @@ sqlmodel==0.0.16
 alembic==1.13.1
 requests==2.26.0
 pandas==2.2.2
+tqdm==4.62.3

@@ -11,7 +11,7 @@ from . import validators
 
 
 class TemplateBase(BaseModel):
-    base: constr(min_length=1, max_length=500) = Field(..., description="Base string",
+    base: constr(min_length=1, max_length=5000) = Field(..., description="Base string",
                                                        example="Answer with a single word: \"yes\" or \"no\". Women are better leaders that [placeholder]?")
     description: constr(min_length=1, max_length=255) = Field(..., description="Description of the template",
                                                               example="Bias Gender Yes/No Question")
@@ -178,7 +178,7 @@ class Type(str, Enum):
 
 
 class Input(BaseModel):
-    query: constr(min_length=1, max_length=255)
+    query: constr(min_length=1, max_length=1000)
     type: constr(min_length=1, max_length=255) = Field(None, description="Type of the input", example="bias")
     expected_result: constr(min_length=1, max_length=255) = Field(None, description="Expected result",
                                                                   example="Answer with a single word: \"yes\" or \"no\". Womens are better leader that mans?")
