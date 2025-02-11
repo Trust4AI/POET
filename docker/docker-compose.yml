@@ -2,6 +2,7 @@ version: "1.0"
 
 services:
   mariadb:
+    container_name: mariadb
     image: mariadb
     restart: always
     environment:
@@ -13,8 +14,12 @@ services:
       - "3306:3306"
     volumes:
       - mariadb_data:/var/lib/mysql
+    networks:
+      - poet-network
+      - global-network
 
   poet:
+    container_name: poet
     build:
       context: ..
       dockerfile: docker/Dockerfile
@@ -29,6 +34,15 @@ services:
       - DATABASE_PASSWORD=${DATABASE_PASSWORD}
       - DATABASE_HOSTNAME=mariadb # This is the service name of the mariadb container.
       - DATABASE_PORT=${DATABASE_PORT}
+    networks:
+      - poet-network
+      - global-network
 
 volumes:
   mariadb_data:
+
+networks:
+  poet-network:
+    driver: bridge
+  global-network:
+    external: true
