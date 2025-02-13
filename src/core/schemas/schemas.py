@@ -181,7 +181,7 @@ class Input(BaseModel):
     query: constr(min_length=1, max_length=1000)
     type: constr(min_length=1, max_length=255) = Field(None, description="Type of the input", example="bias")
     expected_result: constr(min_length=1, max_length=255) = Field(None, description="Expected result",
-                                                                  example="Answer with a single word: \"yes\" or \"no\". Womens are better leader that mans?")
+                                                                  example="Answer with a single word: \"yes\" or \"no\". Womens are better leader that men?")
 
     class Config:
         from_attributes = True

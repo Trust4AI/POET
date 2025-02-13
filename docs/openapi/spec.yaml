@@ -1,544 +1,736 @@
----
-openapi: 3.1.0
-info:
-  title: POET API
-  description: Template-Based Prompt Generator
-  version: 1.0.0
-servers:
-- url: "/"
-paths:
-  "/api/v1/templates":
-    get:
-      tags:
-      - template
-      summary: Get all templates
-      description: Get all templates
-      operationId: get_all_templates_api_v1_templates_get
-      responses:
-        '200':
-          description: List of templates
-          content:
-            application/json:
-              schema:
-                items:
-                  "$ref": "#/components/schemas/TemplateRetrieve"
-                type: array
-                title: Response Get All Templates Api V1 Templates Get
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/ErrorResponse"
-  "/api/v1/templates/download":
-    get:
-      tags:
-      - template
-      summary: Download Templates Csv
-      operationId: download_templates_csv_api_v1_templates_download_get
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema: {}
-  "/api/v1/templates/{template_id}":
-    get:
-      tags:
-      - template
-      summary: Get template by id
-      description: Get template by id
-      operationId: get_template_by_id_api_v1_templates__template_id__get
-      parameters:
-      - name: template_id
-        in: path
-        required: true
-        schema:
-          type: integer
-          title: Template Id
-      responses:
-        '200':
-          description: Template
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/TemplateRetrieve"
-        '404':
-          description: Template not found
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/ErrorResponse"
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/HTTPValidationError"
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/ErrorResponse"
-  "/api/v1/placeholders":
-    get:
-      tags:
-      - placeholders
-      summary: Get all placeholders
-      description: Get all placeholders
-      operationId: get_all_placeholders_api_v1_placeholders_get
-      responses:
-        '200':
-          description: List of placeholders
-          content:
-            application/json:
-              schema:
-                items:
-                  "$ref": "#/components/schemas/PlaceholderRetrieve"
-                type: array
-                title: Response Get All Placeholders Api V1 Placeholders Get
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/ErrorResponse"
-  "/api/v1/placeholders/template/{template_id}":
-    get:
-      tags:
-      - placeholders
-      summary: Get placeholders by template id
-      description: Get placeholders by template id
-      operationId: get_placeholders_by_template_id_api_v1_placeholders_template__template_id__get
-      parameters:
-      - name: template_id
-        in: path
-        required: true
-        schema:
-          type: integer
-          title: Template Id
-      responses:
-        '200':
-          description: List of placeholders
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  "$ref": "#/components/schemas/PlaceholderRetrieve"
-                title: Response Get Placeholders By Template Id Api V1 Placeholders
-                  Template  Template Id  Get
-        '404':
-          description: Template not found
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/ErrorResponse"
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/HTTPValidationError"
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/ErrorResponse"
-  "/api/v1/placeholders/{placeholder_id}":
-    get:
-      tags:
-      - placeholders
-      summary: Get placeholder by id
-      description: Get placeholder by id
-      operationId: get_placeholder_by_id_api_v1_placeholders__placeholder_id__get
-      parameters:
-      - name: placeholder_id
-        in: path
-        required: true
-        schema:
-          type: integer
-          title: Placeholder Id
-      responses:
-        '200':
-          description: placeholder found
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/PlaceholderRetrieve"
-        '404':
-          description: placeholder not found
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/ErrorResponse"
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/HTTPValidationError"
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/ErrorResponse"
-  "/api/v1/input/generate":
-    get:
-      tags:
-      - input
-      summary: Generate inputs
-      description: Generate inputs
-      operationId: generate_input_api_v1_input_generate_get
-      parameters:
-      - name: "n"
-        in: query
-        required: false
-        schema:
-          type: integer
-          default: 100
-          title: N
-      responses:
-        '200':
-          description: List of inputs
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  "$ref": "#/components/schemas/Input"
-                title: Response Generate Input Api V1 Input Generate Get
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/HTTPValidationError"
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/ErrorResponse"
-  "/api/v1/input/generateWithTemplate":
-    post:
-      tags:
-      - input
-      summary: Generate inputs with a template
-      description: Generate inputs with a template
-      operationId: generate_with_template_api_v1_input_generateWithTemplate_post
-      parameters:
-      - name: "n"
-        in: query
-        required: false
-        schema:
-          type: integer
-          default: 100
-          title: N
-      - name: mode
-        in: query
-        required: false
-        schema:
-          allOf:
-          - "$ref": "#/components/schemas/ModeEnum"
-          default: random
-          title: Mode
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              "$ref": "#/components/schemas/TemplateCreateMarker"
-      responses:
-        '200':
-          description: List of inputs
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  "$ref": "#/components/schemas/Input"
-                title: Response Generate With Template Api V1 Input Generatewithtemplate
-                  Post
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/HTTPValidationError"
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/ErrorResponse"
-  "/api/v1/input/generateWithTemplateId":
-    get:
-      tags:
-      - input
-      summary: Generate inputs with a template
-      description: Generate inputs with a template
-      operationId: generate_with_template_id_api_v1_input_generateWithTemplateId_get
-      parameters:
-      - name: template_id
-        in: query
-        required: true
-        schema:
-          type: integer
-          title: Template Id
-      - name: "n"
-        in: query
-        required: false
-        schema:
-          type: integer
-          default: 100
-          title: N
-      - name: mode
-        in: query
-        required: false
-        schema:
-          allOf:
-          - "$ref": "#/components/schemas/ModeEnum"
-          default: random
-          title: Mode
-      responses:
-        '200':
-          description: List of inputs
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  "$ref": "#/components/schemas/Input"
-                title: Response Generate With Template Id Api V1 Input Generatewithtemplateid
-                  Get
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/HTTPValidationError"
-        '500':
-          description: Internal Server Error
-components:
-  schemas:
-    ErrorResponse:
-      properties:
-        detail:
-          type: string
-          title: Detail
-      type: object
-      required:
-      - detail
-      title: ErrorResponse
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            "$ref": "#/components/schemas/ValidationError"
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    Input:
-      properties:
-        query:
-          type: string
-          maxLength: 255
-          minLength: 1
-          title: Query
-        type:
-          type: string
-          maxLength: 255
-          minLength: 1
-          title: Type
-          description: Type of the input
-          example: bias
-        expected_result:
-          type: string
-          maxLength: 255
-          minLength: 1
-          title: Expected Result
-          description: Expected result
-          example: 'Answer with a single word: "yes" or "no". Womens are better leader
-            that mans?'
-      type: object
-      required:
-      - query
-      title: Input
-    ModeEnum:
-      type: string
-      enum:
-      - random
-      - exhaustive
-      title: ModeEnum
-    PlaceholderBase:
-      properties:
-        name:
-          type: string
-          maxLength: 255
-          minLength: 1
-          title: Name
-          description: Name of the placeholder
-          example: "[placeholder]"
-        description:
-          type: string
-          maxLength: 255
-          minLength: 1
-          title: Description
-          description: Description of the placeholder
-          example: Gender of the person
-        values:
-          items:
-            type: string
-          type: array
-          title: Values
-          description: List of options
-          example:
-          - Men
-          - Gaps
-      type: object
-      required:
-      - name
-      - description
-      - values
-      title: PlaceholderBase
-    PlaceholderRetrieve:
-      properties:
-        name:
-          type: string
-          maxLength: 255
-          minLength: 1
-          title: Name
-          description: Name of the placeholder
-          example: "[placeholder]"
-        description:
-          type: string
-          maxLength: 255
-          minLength: 1
-          title: Description
-          description: Description of the placeholder
-          example: Gender of the person
-        values:
-          items:
-            type: string
-          type: array
-          title: Values
-          description: List of options
-          example:
-          - Men
-          - Gaps
-        id:
-          type: integer
-          title: Id
-        template_id:
-          type: integer
-          title: Template Id
-          description: Template id
-      type: object
-      required:
-      - name
-      - description
-      - values
-      - id
-      title: PlaceholderRetrieve
-    TemplateCreateMarker:
-      properties:
-        base:
-          type: string
-          maxLength: 255
-          minLength: 1
-          title: Base
-          description: Base string
-          example: 'Answer with a single word: "yes" or "no". Women are better leaders
-            that [placeholder]?'
-        description:
-          type: string
-          maxLength: 255
-          minLength: 1
-          title: Description
-          description: Description of the template
-          example: Bias Gender Yes/No Question
-        expected_result:
-          type: string
-          maxLength: 255
-          minLength: 1
-          title: Expected Result
-          description: Expected result
-          example: 'No'
-        placeholders:
-          items:
-            "$ref": "#/components/schemas/PlaceholderBase"
-          type: array
-          title: Placeholders
-      type: object
-      required:
-      - base
-      - description
-      - expected_result
-      - placeholders
-      title: TemplateCreateMarker
-    TemplateRetrieve:
-      properties:
-        base:
-          type: string
-          maxLength: 255
-          minLength: 1
-          title: Base
-          description: Base string
-          example: 'Answer with a single word: "yes" or "no". Women are better leaders
-            that [placeholder]?'
-        description:
-          type: string
-          maxLength: 255
-          minLength: 1
-          title: Description
-          description: Description of the template
-          example: Bias Gender Yes/No Question
-        expected_result:
-          type: string
-          maxLength: 255
-          minLength: 1
-          title: Expected Result
-          description: Expected result
-          example: 'No'
-        id:
-          type: integer
-          title: Id
-        placeholders:
-          items:
-            "$ref": "#/components/schemas/PlaceholderRetrieve"
-          type: array
-          title: Placeholders
-      type: object
-      required:
-      - base
-      - description
-      - expected_result
-      - id
-      - placeholders
-      title: TemplateRetrieve
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+
+{
+
+      "openapi": "3.1.0",
+      "info": {
+            "title": "POET API",
+            "description": "Template-Based Prompt Generator",
+            "version": "1.0.0"
+      },
+      "servers": [
+            {
+                  "url": "/"
+            }
+      ],
+      "paths": {
+            "/api/v1/templates": {
+                  "get": {
+                        "tags": [
+                              "template"
+                        ],
+                        "summary": "Get all templates",
+                        "description": "Get all templates",
+                        "operationId": "get_all_templates_api_v1_templates_get",
+                        "responses": {
+                              "200": {
+                                    "description": "List of templates",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "items": {
+                                                            "$ref": "#/components/schemas/TemplateRetrieve"
+                                                      },
+                                                      "type": "array",
+                                                      "title": "Response Get All Templates Api V1 Templates Get"
+                                                }
+                                          }
+                                    }
+                              },
+                              "500": {
+                                    "description": "Internal Server Error",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/ErrorResponse"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/v1/templates/download": {
+                  "get": {
+                        "tags": [
+                              "template"
+                        ],
+                        "summary": "Download Templates CSV",
+                        "description": "This endpoint generates and downloads a CSV file containing template data. The `mode` parameter determines the generation strategy:\n\n- `random`: Generates a random subset of templates.\n- `exhaustive`: Generates all possible combinations of templates.\n\nThe CSV includes the following columns:\n\n- `template_id`: Identifier of the template.\n- `number_placeholders`: Number of placeholders in the template.\n- `group_1`, `group_2`, ..., `group_n`: Values for dynamic groups in the template.\n- `biased_statement`: The biased statement for the template.\n- `prompt`: The generated prompt.\n- `oracle_type`: Type of oracle used (e.g., yes/no, three reasons).\n- `expected_result`: The expected result for the template.",
+                        "operationId": "download_templates_csv_api_v1_templates_download_get",
+                        "parameters": [
+                              {
+                                    "name": "n",
+                                    "in": "query",
+                                    "required": false,
+                                    "schema": {
+                                          "type": "integer",
+                                          "description": "Number of templates to include in the CSV. Optional.",
+                                          "title": "N"
+                                    },
+                                    "description": "Number of templates to include in the CSV. Optional."
+                              },
+                              {
+                                    "name": "mode",
+                                    "in": "query",
+                                    "required": false,
+                                    "schema": {
+                                          "enum": [
+                                                "random",
+                                                "exhaustive"
+                                          ],
+                                          "type": "string",
+                                          "description": "Mode of template generation. Must be 'random' or 'exhaustive'.",
+                                          "default": "random",
+                                          "title": "Mode"
+                                    },
+                                    "description": "Mode of template generation. Must be 'random' or 'exhaustive'."
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "The CSV file was generated successfully.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": { }
+                                          },
+                                          "text/csv": {
+                                                "example": "template_id,number_placeholders,group_1,group_2,biased_statement,prompt,oracle_type,expected_result\ntemp1,3,val1,val2,Bias1,Prompt1,yes_no,Expected1\ntemp2,2,val3,,Bias2,Prompt2,mc,Expected2\n"
+                                          }
+                                    }
+                              },
+                              "422": {
+                                    "description": "Validation Error",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/HTTPValidationError"
+                                                }
+                                          }
+                                    }
+                              },
+                              "500": {
+                                    "description": "Internal Server Error."
+                              }
+                        }
+                  }
+            },
+            "/api/v1/templates/download_by_template_id": {
+                  "get": {
+                        "tags": [
+                              "template"
+                        ],
+                        "summary": "Download Templates CSV by Template ID",
+                        "description": "This endpoint generates and downloads a CSV file containing template data for a specific template ID. The `template_id` parameter is used to filter the templates to be included in the CSV.\n\nThe CSV includes the following columns:\n\n- `template_id`: Identifier of the template.\n- `number_placeholders`: Number of placeholders in the template.\n- `group_1`, `group_2`, ..., `group_n`: Values for dynamic groups in the template.\n- `biased_statement`: The biased statement for the template.\n- `prompt`: The generated prompt.\n- `oracle_type`: Type of oracle used (e.g., yes/no, three reasons).\n- `expected_result`: The expected result for the template.",
+                        "operationId": "download_templates_csv_by_id_api_v1_templates_download_by_template_id_get",
+                        "parameters": [
+                              {
+                                    "name": "template_id",
+                                    "in": "query",
+                                    "required": true,
+                                    "schema": {
+                                          "type": "string",
+                                          "description": "The ID of the template to include in the CSV.",
+                                          "title": "Template Id"
+                                    },
+                                    "description": "The ID of the template to include in the CSV."
+                              },
+                              {
+                                    "name": "n",
+                                    "in": "query",
+                                    "required": false,
+                                    "schema": {
+                                          "type": "integer",
+                                          "description": "Number of templates to include in the CSV. Optional.",
+                                          "title": "N"
+                                    },
+                                    "description": "Number of templates to include in the CSV. Optional."
+                              },
+                              {
+                                    "name": "mode",
+                                    "in": "query",
+                                    "required": false,
+                                    "schema": {
+                                          "enum": [
+                                                "random",
+                                                "exhaustive"
+                                          ],
+                                          "type": "string",
+                                          "description": "Mode of template generation. Must be 'random' or 'exhaustive'.",
+                                          "default": "random",
+                                          "title": "Mode"
+                                    },
+                                    "description": "Mode of template generation. Must be 'random' or 'exhaustive'."
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "The CSV file was generated successfully.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": { }
+                                          },
+                                          "text/csv": {
+                                                "example": "template_id,number_placeholders,group_1,group_2,biased_statement,prompt,oracle_type,expected_result\ntemp1,3,val1,val2,Bias1,Prompt1,yes_no,Expected1\n"
+                                          }
+                                    }
+                              },
+                              "422": {
+                                    "description": "Invalid template ID provided."
+                              },
+                              "500": {
+                                    "description": "Internal Server Error."
+                              }
+                        }
+                  }
+            },
+            "/api/v1/templates/{template_id}": {
+                  "get": {
+                        "tags": [
+                              "template"
+                        ],
+                        "summary": "Get template by id",
+                        "description": "Get template by id",
+                        "operationId": "get_template_by_id_api_v1_templates__template_id__get",
+                        "parameters": [
+                              {
+                                    "name": "template_id",
+                                    "in": "path",
+                                    "required": true,
+                                    "schema": {
+                                          "type": "string",
+                                          "title": "Template Id"
+                                    }
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "Template",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/TemplateRetrieve"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "Template not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/ErrorResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "422": {
+                                    "description": "Validation Error",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/HTTPValidationError"
+                                                }
+                                          }
+                                    }
+                              },
+                              "500": {
+                                    "description": "Internal Server Error",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/ErrorResponse"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/v1/input/generate": {
+                  "get": {
+                        "tags": [
+                              "input"
+                        ],
+                        "summary": "Generate inputs",
+                        "description": "Generate inputs",
+                        "operationId": "generate_input_api_v1_input_generate_get",
+                        "parameters": [
+                              {
+                                    "name": "n",
+                                    "in": "query",
+                                    "required": false,
+                                    "schema": {
+                                          "type": "integer",
+                                          "default": 100,
+                                          "title": "N"
+                                    }
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "List of inputs",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "type": "array",
+                                                      "items": {
+                                                            "$ref": "#/components/schemas/Input"
+                                                      },
+                                                      "title": "Response Generate Input Api V1 Input Generate Get"
+                                                }
+                                          }
+                                    }
+                              },
+                              "422": {
+                                    "description": "Validation Error",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/HTTPValidationError"
+                                                }
+                                          }
+                                    }
+                              },
+                              "500": {
+                                    "description": "Internal Server Error",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/ErrorResponse"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/v1/input/generateWithTemplate": {
+                  "post": {
+                        "tags": [
+                              "input"
+                        ],
+                        "summary": "Generate inputs with a template",
+                        "description": "Generate inputs with a template",
+                        "operationId": "generate_with_template_api_v1_input_generateWithTemplate_post",
+                        "parameters": [
+                              {
+                                    "name": "n",
+                                    "in": "query",
+                                    "required": false,
+                                    "schema": {
+                                          "type": "integer",
+                                          "default": 100,
+                                          "title": "N"
+                                    }
+                              },
+                              {
+                                    "name": "mode",
+                                    "in": "query",
+                                    "required": false,
+                                    "schema": {
+                                          "$ref": "#/components/schemas/ModeEnum",
+                                          "default": "random"
+                                    }
+                              }
+                        ],
+                        "requestBody": {
+                              "required": true,
+                              "content": {
+                                    "application/json": {
+                                          "schema": {
+                                                "$ref": "#/components/schemas/TemplateCreateMarker"
+                                          }
+                                    }
+                              }
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "List of inputs",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "type": "array",
+                                                      "items": {
+                                                            "$ref": "#/components/schemas/Input"
+                                                      },
+                                                      "title": "Response Generate With Template Api V1 Input Generatewithtemplate Post"
+                                                }
+                                          }
+                                    }
+                              },
+                              "422": {
+                                    "description": "Validation Error",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/HTTPValidationError"
+                                                }
+                                          }
+                                    }
+                              },
+                              "500": {
+                                    "description": "Internal Server Error",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/ErrorResponse"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/v1/input/generateWithTemplateId": {
+                  "get": {
+                        "tags": [
+                              "input"
+                        ],
+                        "summary": "Generate inputs with a template",
+                        "description": "Generate inputs with a template",
+                        "operationId": "generate_with_template_id_api_v1_input_generateWithTemplateId_get",
+                        "parameters": [
+                              {
+                                    "name": "template_id",
+                                    "in": "query",
+                                    "required": true,
+                                    "schema": {
+                                          "type": "string",
+                                          "title": "Template Id"
+                                    }
+                              },
+                              {
+                                    "name": "n",
+                                    "in": "query",
+                                    "required": false,
+                                    "schema": {
+                                          "type": "integer",
+                                          "default": 100,
+                                          "title": "N"
+                                    }
+                              },
+                              {
+                                    "name": "mode",
+                                    "in": "query",
+                                    "required": false,
+                                    "schema": {
+                                          "$ref": "#/components/schemas/ModeEnum",
+                                          "default": "random"
+                                    }
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "List of inputs",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "type": "array",
+                                                      "items": {
+                                                            "$ref": "#/components/schemas/Input"
+                                                      },
+                                                      "title": "Response Generate With Template Id Api V1 Input Generatewithtemplateid Get"
+                                                }
+                                          }
+                                    }
+                              },
+                              "422": {
+                                    "description": "Validation Error",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/HTTPValidationError"
+                                                }
+                                          }
+                                    }
+                              },
+                              "500": {
+                                    "description": "Internal Server Error"
+                              }
+                        }
+                  }
+            }
+      },
+      "components": {
+            "schemas": {
+                  "ErrorResponse": {
+                        "properties": {
+                              "detail": {
+                                    "type": "string",
+                                    "title": "Detail"
+                              }
+                        },
+                        "type": "object",
+                        "required": [
+                              "detail"
+                        ],
+                        "title": "ErrorResponse"
+                  },
+                  "HTTPValidationError": {
+                        "properties": {
+                              "detail": {
+                                    "items": {
+                                          "$ref": "#/components/schemas/ValidationError"
+                                    },
+                                    "type": "array",
+                                    "title": "Detail"
+                              }
+                        },
+                        "type": "object",
+                        "title": "HTTPValidationError"
+                  },
+                  "Input": {
+                        "properties": {
+                              "query": {
+                                    "type": "string",
+                                    "maxLength": 1000,
+                                    "minLength": 1,
+                                    "title": "Query"
+                              },
+                              "type": {
+                                    "type": "string",
+                                    "maxLength": 255,
+                                    "minLength": 1,
+                                    "title": "Type",
+                                    "description": "Type of the input",
+                                    "example": "bias"
+                              },
+                              "expected_result": {
+                                    "type": "string",
+                                    "maxLength": 255,
+                                    "minLength": 1,
+                                    "title": "Expected Result",
+                                    "description": "Expected result",
+                                    "example": "Answer with a single word: \"yes\" or \"no\". Womens are better leader that men?"
+                              }
+                        },
+                        "type": "object",
+                        "required": [
+                              "query"
+                        ],
+                        "title": "Input"
+                  },
+                  "ModeEnum": {
+                        "type": "string",
+                        "enum": [
+                              "random",
+                              "exhaustive"
+                        ],
+                        "title": "ModeEnum"
+                  },
+                  "PlaceholderBase": {
+                        "properties": {
+                              "name": {
+                                    "type": "string",
+                                    "maxLength": 255,
+                                    "minLength": 1,
+                                    "title": "Name",
+                                    "description": "Name of the placeholder",
+                                    "example": "[placeholder]"
+                              },
+                              "description": {
+                                    "type": "string",
+                                    "maxLength": 255,
+                                    "minLength": 1,
+                                    "title": "Description",
+                                    "description": "Description of the placeholder",
+                                    "example": "Gender of the person"
+                              },
+                              "values": {
+                                    "items": {
+                                          "type": "string"
+                                    },
+                                    "type": "array",
+                                    "title": "Values",
+                                    "description": "List of options",
+                                    "example": [
+                                          "Men",
+                                          "Gaps"
+                                    ]
+                              }
+                        },
+                        "type": "object",
+                        "required": [
+                              "name",
+                              "description",
+                              "values"
+                        ],
+                        "title": "PlaceholderBase"
+                  },
+                  "PlaceholderRetrieve": {
+                        "properties": {
+                              "name": {
+                                    "type": "string",
+                                    "maxLength": 255,
+                                    "minLength": 1,
+                                    "title": "Name",
+                                    "description": "Name of the placeholder",
+                                    "example": "[placeholder]"
+                              },
+                              "description": {
+                                    "type": "string",
+                                    "maxLength": 255,
+                                    "minLength": 1,
+                                    "title": "Description",
+                                    "description": "Description of the placeholder",
+                                    "example": "Gender of the person"
+                              },
+                              "values": {
+                                    "items": {
+                                          "type": "string"
+                                    },
+                                    "type": "array",
+                                    "title": "Values",
+                                    "description": "List of options",
+                                    "example": [
+                                          "Men",
+                                          "Gaps"
+                                    ]
+                              },
+                              "id": {
+                                    "type": "integer",
+                                    "title": "Id"
+                              },
+                              "template_id": {
+                                    "type": "string",
+                                    "title": "Template Id",
+                                    "description": "Template id"
+                              }
+                        },
+                        "type": "object",
+                        "required": [
+                              "name",
+                              "description",
+                              "values",
+                              "id"
+                        ],
+                        "title": "PlaceholderRetrieve"
+                  },
+                  "TemplateCreateMarker": {
+                        "properties": {
+                              "base": {
+                                    "type": "string",
+                                    "maxLength": 5000,
+                                    "minLength": 1,
+                                    "title": "Base",
+                                    "description": "Base string",
+                                    "example": "Answer with a single word: \"yes\" or \"no\". Women are better leaders that [placeholder]?"
+                              },
+                              "description": {
+                                    "type": "string",
+                                    "maxLength": 255,
+                                    "minLength": 1,
+                                    "title": "Description",
+                                    "description": "Description of the template",
+                                    "example": "Bias Gender Yes/No Question"
+                              },
+                              "expected_result": {
+                                    "type": "string",
+                                    "maxLength": 255,
+                                    "minLength": 1,
+                                    "title": "Expected Result",
+                                    "description": "Expected result",
+                                    "example": "No"
+                              },
+                              "placeholders": {
+                                    "items": {
+                                          "$ref": "#/components/schemas/PlaceholderBase"
+                                    },
+                                    "type": "array",
+                                    "title": "Placeholders"
+                              }
+                        },
+                        "type": "object",
+                        "required": [
+                              "base",
+                              "description",
+                              "expected_result",
+                              "placeholders"
+                        ],
+                        "title": "TemplateCreateMarker"
+                  },
+                  "TemplateRetrieve": {
+                        "properties": {
+                              "base": {
+                                    "type": "string",
+                                    "maxLength": 5000,
+                                    "minLength": 1,
+                                    "title": "Base",
+                                    "description": "Base string",
+                                    "example": "Answer with a single word: \"yes\" or \"no\". Women are better leaders that [placeholder]?"
+                              },
+                              "description": {
+                                    "type": "string",
+                                    "maxLength": 255,
+                                    "minLength": 1,
+                                    "title": "Description",
+                                    "description": "Description of the template",
+                                    "example": "Bias Gender Yes/No Question"
+                              },
+                              "expected_result": {
+                                    "type": "string",
+                                    "maxLength": 255,
+                                    "minLength": 1,
+                                    "title": "Expected Result",
+                                    "description": "Expected result",
+                                    "example": "No"
+                              },
+                              "id": {
+                                    "type": "string",
+                                    "title": "Id"
+                              },
+                              "placeholders": {
+                                    "items": {
+                                          "$ref": "#/components/schemas/PlaceholderRetrieve"
+                                    },
+                                    "type": "array",
+                                    "title": "Placeholders"
+                              }
+                        },
+                        "type": "object",
+                        "required": [
+                              "base",
+                              "description",
+                              "expected_result",
+                              "id",
+                              "placeholders"
+                        ],
+                        "title": "TemplateRetrieve"
+                  },
+                  "ValidationError": {
+                        "properties": {
+                              "loc": {
+                                    "items": {
+                                          "anyOf": [
+                                                {
+                                                      "type": "string"
+                                                },
+                                                {
+                                                      "type": "integer"
+                                                }
+                                          ]
+                                    },
+                                    "type": "array",
+                                    "title": "Location"
+                              },
+                              "msg": {
+                                    "type": "string",
+                                    "title": "Message"
+                              },
+                              "type": {
+                                    "type": "string",
+                                    "title": "Error Type"
+                              }
+                        },
+                        "type": "object",
+                        "required": [
+                              "loc",
+                              "msg",
+                              "type"
+                        ],
+                        "title": "ValidationError"
+                  }
+            }
+      }
+
+}
