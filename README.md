@@ -341,6 +341,12 @@ held responsible for them. Funded within the framework of the [NGI Search projec
 grant agreement No 101069364.
 
 <p align="center">
-<img src="https://github.com/Trust4AI/trust4ai/blob/main/funding_logos/NGI_Search-rgb_Plan-de-travail-1-2048x410.png" width="400">
-<img src="https://github.com/Trust4AI/trust4ai/blob/main/funding_logos/EU_funding_logo.png" width="200">
+<img src="https://github.com/Trust4AI/trust4ai/blob/main/funding_logos/NGI_Search-rgb_Plan-de-travail-1-2048x410.png" width="350">
+<img src="https://github.com/Trust4AI/trust4ai/blob/main/funding_logos/EU_funding_logo.png" width="250">
+</p>
+
+Actividad: C23.I1.P03.S01.01 ANDALUCÍA Subvención pública para el desarrollo del «Programa INVESTIGO», financiada con cargo a los fondos procedentes del «Mecanismo de Recuperación y Resiliencia».
+
+<p align="center">
+  <img src="https://github.com/Trust4AI/trust4ai/blob/main/funding_logos/Investigo.png" width="900">
 </p>
